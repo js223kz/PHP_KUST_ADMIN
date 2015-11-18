@@ -8,8 +8,20 @@
 
 namespace controllers;
 
-
+require_once('views/MasterView.php');
 class MasterController
 {
+    private $applicationTemplateView;
+
+
+    public function __construct($applicationTemplateView)
+    {
+        $this->applicationTemplateView = $applicationTemplateView;
+        $applicationTemplateView->renderTemplateHTML();
+
+        if($applicationTemplateView->userWantsToLogin()){
+            var_dump("Login");
+        }
+    }
 
 }

@@ -11,26 +11,35 @@ namespace views;
 
 class MasterView
 {
+    //$partialView
 
-    public function renderTemplateHTML($partialView){
+    private static $login = 'MasterView::Login';
+
+
+    public function renderTemplateHTML(){
         echo '<!DOCTYPE html>
           <html>
             <head>
               <meta charset="utf-8">
             </head>
             <body>
-                <header><button value="Login" type="submit"></button></header>
+                <header>
+                <form method="post">
+                    <input type="submit" value="Login" name='.self::$login.'>
+                </form>
+                </header>
                 <div class="container">
-
-               </div>
+                </div>
              </body>
           </html>
     ';
-
-
-
-
-
     }
 
+
+    public function userWantsToLogin(){
+        if(isset($_POST[self::$login])){
+            return true;
+        }
+        return false;
+    }
 }
