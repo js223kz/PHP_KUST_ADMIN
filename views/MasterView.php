@@ -11,12 +11,10 @@ namespace views;
 
 class MasterView
 {
-    //$partialView
 
     private static $login = 'MasterView::Login';
 
-
-    public function renderTemplateHTML(){
+    public function renderTemplateHTML($partialView){
         echo '<!DOCTYPE html>
           <html>
             <head>
@@ -29,6 +27,7 @@ class MasterView
                 </form>
                 </header>
                 <div class="container">
+                '.$partialView.'
                 </div>
              </body>
           </html>
@@ -36,7 +35,7 @@ class MasterView
     }
 
 
-    public function userWantsToLogin(){
+    public function userClickedLogin(){
         if(isset($_POST[self::$login])){
             return true;
         }

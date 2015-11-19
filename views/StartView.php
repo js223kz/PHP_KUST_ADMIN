@@ -12,4 +12,6 @@ namespace views;
 class StartView
 {
 
+    public function renderStartHtml(){
+    }
 }
