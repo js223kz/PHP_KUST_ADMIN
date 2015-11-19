@@ -21,6 +21,7 @@ class LoginView
         <form method="post" action="">
             <fieldset>
                 <legend>Logga in</legend>
+                <p></p>
                 <input type="text" id="' . self::$userName . '"name="' . self::$userName . '"/>
                 <input type="text" id="' . self::$passWord . '"name="' . self::$passWord . '"/>
                 <input type="submit" id="' . self::$submitLogin . '" name=' . self::$submitLogin . ' value="Login"/>
@@ -35,6 +36,4 @@ class LoginView
         }
         return false;
     }
-
-
 }

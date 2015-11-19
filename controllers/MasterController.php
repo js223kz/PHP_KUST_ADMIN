@@ -33,6 +33,11 @@ class MasterController
         }
         else{
             $applicationTemplateView->renderTemplateHTML($startView->renderStartHtml());
+            if($startView->wantsToRegisterNewUser()){
+                $startView->registerUser();
+                var_dump($startView->getUserName());
+                var_dump($startView->getPassWord());
+            }
         }
     }
 
@@ -49,9 +54,6 @@ class MasterController
 
         echo "Appropriate Cost Found: " . $cost . "\n";
     }
-/*$options = [
-'cost' => 12,
-];
-echo password_hash("rasmuslerdorf", PASSWORD_BCRYPT, $options)."\n";*/
+
 
 }
