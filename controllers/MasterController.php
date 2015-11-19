@@ -11,6 +11,9 @@ namespace controllers;
 require_once('views/MasterView.php');
 require_once('views/LoginView.php');
 require_once('views/StartView.php');
+require_once('models/Register.php');
+require_once('models/DatabaseConnection.php');
+
 class MasterController
 {
     private $applicationTemplateView;
@@ -35,8 +38,14 @@ class MasterController
             $applicationTemplateView->renderTemplateHTML($startView->renderStartHtml());
             if($startView->wantsToRegisterNewUser()){
                 $startView->registerUser();
-                var_dump($startView->getUserName());
-                var_dump($startView->getPassWord());
+                try{
+                    $databaseConnection = new \models\DatabaseConnection();
+                    $resgisterDAL = new \models\Register($databaseConnection);
+                }catch(\Exception $e){
+
+                }
+                $resgisterDAL->registerUser($startView->getUserName(), $startView->getPassWord());
+
             }
         }
     }
