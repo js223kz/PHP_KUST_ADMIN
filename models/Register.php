@@ -11,7 +11,7 @@ namespace models;
 
 class Register
 {
-    private static $databaseTable = "users";
+    private $databaseTable = "users";
     private $dbConnection;
 
     public function __construct($mysqli){
@@ -19,7 +19,34 @@ class Register
         $this->dbConnection = $mysqli;
     }
 
-    public function registerUser($username, $Password){
+    public function registerUser($username, $password){
 
+        $query=mysqli_query($this->dbConnection,
+            "CALL register_user('$username','$password')");
+        if ($query === FALSE) {
+            throw new \Exception($this->database->error);
+        }
+
+
+
+        //bind first parameter to session variable @username
+        /*$query = $this->dbConnection->prepare('SET @username := ?');
+        if ($query === FALSE) {
+            throw new \Exception($this->database->error);
+        }
+        $query->bind_param('s', $username);
+        $query->execute();
+
+        //bind second parameter to session variable @password
+        $query = $this->dbConnection->prepare('SET @password := ?');
+        if ($query === FALSE) {
+            throw new \Exception($this->database->error);
+        }
+        $query->bind_param('s', $password);
+        $query->execute();
+
+        //execute stored procedure
+        $this->dbConnection->query('call register_user(@username, @password)');
+        $this->dbConnection->close();*/
     }
 }

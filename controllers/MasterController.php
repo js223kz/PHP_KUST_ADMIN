@@ -12,7 +12,7 @@ require_once('views/MasterView.php');
 require_once('views/LoginView.php');
 require_once('views/StartView.php');
 require_once('models/Register.php');
-require_once('models/DatabaseConnection.php');
+require_once('commons/DatabaseConnection.php');
 
 class MasterController
 {
@@ -39,12 +39,14 @@ class MasterController
             if($startView->wantsToRegisterNewUser()){
                 $startView->registerUser();
                 try{
-                    $databaseConnection = new \models\DatabaseConnection();
-                    $resgisterDAL = new \models\Register($databaseConnection);
+                    $databaseConnection = new \commons\DatabaseConnection();
+                    $registerDAL = new \models\Register($databaseConnection->DbConnection());
+                    //kanske borde ligga utanför och fånga sina egna exceptions
+                    $registerDAL->registerUser($startView->getUserName(), $startView->getPassWord());
+
                 }catch(\Exception $e){
 
                 }
-                $resgisterDAL->registerUser($startView->getUserName(), $startView->getPassWord());
 
             }
         }

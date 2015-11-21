@@ -41,6 +41,7 @@ class StartView
     public function registerUser(){
         if(isset($_POST[self::$userName]) && isset($_POST[self::$passWord])){
             $this->hashedPassword = $this->hashPassword($_POST[self::$passWord]);
+
         }
     }
 
@@ -59,7 +60,7 @@ class StartView
         $options = [
             'cost' => 9,
         ];
-        $password = password_hash($password, PASSWORD_DEFAULT, $options);
+        $password = password_hash($password, PASSWORD_DEFAULT, $options);//can return null
         return $password;
     }
 }
