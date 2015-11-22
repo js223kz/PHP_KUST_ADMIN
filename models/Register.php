@@ -21,16 +21,7 @@ class Register
 
     public function registerUser($username, $password){
 
-        $query=mysqli_query($this->dbConnection,
-            "CALL register_user('$username','$password')");
-        if ($query === FALSE) {
-            throw new \Exception($this->database->error);
-        }
-
-
-
-        //bind first parameter to session variable @username
-        /*$query = $this->dbConnection->prepare('SET @username := ?');
+        $query = $this->dbConnection->prepare('SET @username := ?');
         if ($query === FALSE) {
             throw new \Exception($this->database->error);
         }
@@ -47,6 +38,6 @@ class Register
 
         //execute stored procedure
         $this->dbConnection->query('call register_user(@username, @password)');
-        $this->dbConnection->close();*/
+        $this->dbConnection->close();
     }
 }

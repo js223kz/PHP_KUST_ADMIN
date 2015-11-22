@@ -17,39 +17,24 @@ require_once('commons/DatabaseConnection.php');
 class MasterController
 {
     private $applicationTemplateView;
+    private $isUserLoggedIn = false;
 
 
 
     public function __construct($applicationTemplateView)
     {
         $this->applicationTemplateView = $applicationTemplateView;
+
         $startView = new \views\StartView();
         $loginView = new \views\LoginView();
 
-
         //$this->checkCost();
-        if($applicationTemplateView->userClickedLogin()){
-            $applicationTemplateView->renderTemplateHTML($loginView->renderLoginHtml());
+        if($applicationTemplateView->userClickedLogin() || $this->isUserLoggedIn == false){
+            $applicationTemplateView->renderTemplateHTML($loginView->renderHtml($this->isUserLoggedIn));
+        }else{
+            $this->applicationTemplateView->renderTemplateHTML($startView->renderHtml());
         }
-        else if($loginView->userSubmitsLoginData()) {
 
-        }
-        else{
-            $applicationTemplateView->renderTemplateHTML($startView->renderStartHtml());
-            if($startView->wantsToRegisterNewUser()){
-                $startView->registerUser();
-                try{
-                    $databaseConnection = new \commons\DatabaseConnection();
-                    $registerDAL = new \models\Register($databaseConnection->DbConnection());
-                    //kanske borde ligga utanför och fånga sina egna exceptions
-                    $registerDAL->registerUser($startView->getUserName(), $startView->getPassWord());
-
-                }catch(\Exception $e){
-
-                }
-
-            }
-        }
     }
 
     public function checkCost(){
