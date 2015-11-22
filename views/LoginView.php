@@ -85,6 +85,9 @@ class LoginView
     }
 
     public function getPassword(){
-        return $_POST[self::$passWord];
+        if(isset($_POST[self::$passWord])){
+            return $_POST[self::$passWord];
+        }
+        return null;
     }
 }

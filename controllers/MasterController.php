@@ -8,11 +8,15 @@
 
 namespace controllers;
 
+use models\LoginDAL;
+use models\User;
+
 require_once('views/MasterView.php');
 require_once('views/LoginView.php');
 require_once('views/StartView.php');
-require_once('models/Register.php');
 require_once('commons/DatabaseConnection.php');
+require_once('models/User.php');
+require_once('models/LoginDAL.php');
 
 class MasterController
 {
@@ -31,7 +35,12 @@ class MasterController
         //$this->checkCost();
         if($applicationTemplateView->userClickedLogin() || $this->isUserLoggedIn == false){
             $applicationTemplateView->renderTemplateHTML($loginView->renderHtml($this->isUserLoggedIn));
-        }else{
+            if($loginView->userSubmitsLoginData()){
+                $user = new LoginDAL();
+                $user->tryLogin(new User($loginView->getUserName(), $loginView->getPassword()));
+            }
+        }
+        else{
             $this->applicationTemplateView->renderTemplateHTML($startView->renderHtml());
         }
 

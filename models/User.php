@@ -7,6 +7,13 @@
  */
 
 namespace models;
+use exceptions\EmptyPasswordException;
+use exceptions\EmptyUsernameException;
+use exceptions\NotAllowedException;
+
+require_once('commons/exceptions/EmptyPasswordException.php');
+require_once('commons/exceptions/EmptyUsernameException.php');
+require_once('commons/exceptions/NotAllowedException.php');
 
 
 class User
@@ -19,18 +26,25 @@ class User
        trim($username);
        trim($password);
 
-        if(empty($userName)){
-            throw new \Exception("Användarnamn saknas");
+        if(empty($username)){
+            throw new EmptyUsernameException;
         }
-        if(empty($passWord)){
-            throw new \Exception("Lösenord saknas");
+        if(empty($password)){
+            throw new EmptyPasswordException;
         }
         if(mb_strlen($username) != mb_strlen(strip_tags($username)) ||
             mb_strlen($password) != mb_strlen(strip_tags($password))){
-            throw new \Exception("Otillåtna tecken");
+            throw new NotAllowedException;
         }
 
         $this->userName = $username;
         $this->passWord = $password;
+    }
+
+    public function getUsername(){
+        return $this->userName;
+    }
+    public function getPassword(){
+        return $this->passWord;
     }
 }

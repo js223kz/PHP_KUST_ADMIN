@@ -16,7 +16,7 @@ class DatabaseConnection
      * @return \mysqli
      * @throws \Exception
      */
-    public function DbConnection(){
+    public function dbConnection(){
         $this->mysqli = new \mysqli(\Settings::HOST, \Settings::USERNAME, \Settings::PASSWORD,
             \Settings::DATABASENAME);
         if (mysqli_connect_errno()) {
