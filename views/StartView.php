@@ -12,6 +12,5 @@ namespace views;
 class StartView
 {
     public function showStartView(){
-        var_dump("startview");
     }
 }

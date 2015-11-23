@@ -9,13 +9,16 @@
 namespace models;
 
 use commons\DatabaseConnection;
+use exceptions\DatabaseErrorException;
 
 require_once('commons/DatabaseConnection.php');
+require_once('commons/exceptions/DatabaseErrorException.php');
 require_once('models/User.php');
 
 class LoginDAL
 {
     private $dbConnection;
+    private static $isUserLoggedIn = 'LoginDAL::isUserLoggedIn';
     public function __construct()
     {
         $db = new DatabaseConnection();
@@ -23,41 +26,35 @@ class LoginDAL
     }
 
     public function tryLogin($user){
-        $username = $user->getUsername();
-        $password =$user->getPassword();
-        var_dump($username);
+        //Set in/out parameters (in username, out password)
+        $this->dbConnection->query("SET @username = " . "'" .
+            $this->dbConnection->real_escape_string($user->getUsername()) . "'");
+        $this->dbConnection->query("SET @password := FALSE");
 
-        $this->dbConnection->query("SET @username = " . "'" . $this->dbConnection->real_escape_string($username) . "'");
-        $this->dbConnection->query("SET @result := FALSE");
+        //call stored procedure
+        if(!$this->dbConnection->query('CALL login(@username, @password)')){
+            throw new DatabaseErrorException($this->dbConnection->error);
 
-        if(!$this->dbConnection->query('CALL login(@username, @result)')){
-            die("CALL failed: (" . $this->dbConnection->errno . ") " . $this->dbConnection->error);
         }
 
         // Fetch OUT parameters
-        if (!($res = $this->dbConnection->query("SELECT @result AS result"))){
-            die("Fetch failed: (" .$this->dbConnection->errno . ") " . $this->dbConnection->error);
+        if (!($res = $this->dbConnection->query("SELECT @password AS password"))){
+            throw new DatabaseErrorException($this->dbConnection->error);
         }
 
         $row = $res->fetch_assoc();
         $this->dbConnection->close();
 
-        if(password_verify($password, $row['result'])){
-            return true;
-        }else{
-            return false;
+        //check hashed password from database vs user input
+        if(password_verify($user->getPassword(), $row['password'])){
+            $_SESSION[self::$isUserLoggedIn] = $user->getUsername();
         }
-
-
     }
 
-    private function hashPassword($password)
-    {
-        $options = [
-            'cost' => 9,
-        ];
-        $password = password_hash($password, PASSWORD_DEFAULT, $options);//can return null
-        return $password;
+    public function isUserLoggedIn(){
+        if(isset($_SESSION[self::$isUserLoggedIn])){
+            return true;
+        }
+        return false;
     }
-
 }

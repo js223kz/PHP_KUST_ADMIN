@@ -15,10 +15,16 @@ class LoginView
     private static $userName = 'LoginView::Username';
     private static $passWord = 'LoginView::Password';
     private static $submitLogin = 'LoginView::Submitlogin';
-    private $message;
+    private $responseMessage;
     private $username;
+    private $isUserInputValidated = false;
 
-    public function renderLoginFrom(){
+    public function __construct()
+    {
+        $this->setReponseMessage();
+    }
+
+    public function showLoginFrom(){
         return '
         <form method="post" action="">
             <fieldset>
@@ -32,7 +38,15 @@ class LoginView
 		';
     }
 
-    public function renderHtml(){
+    public function userSubmitsLoginData(){
+        return isset($_POST[self::$submitLogin]);
+    }
+
+    public function getMessage(){
+        return $this->responseMessage;
+    }
+
+    public function setReponseMessage(){
 
         if(isset($_POST[self::$submitLogin])){
             $userName = trim($_POST[self::$userName]);
@@ -40,41 +54,48 @@ class LoginView
 
             if(empty($userName) && empty($passWord))
             {
-                $this->setMessage('Användarnamn och lösenord saknas.');
+                $this->setEmptyBothMessage();
             }
-            if(empty($userName) && !empty($passWord))
+            else if(empty($userName) && !empty($passWord))
             {
                 $this->username = $userName;
-                $this->setMessage('Användarnamn saknas.');
+                $this->setEmptyUsernameMessage();
             }
-            if(!empty($userName) && empty($passWord))
+            else if(!empty($userName) && empty($passWord))
             {
                 $this->username = $userName;
-                $this->setMessage('Lösenord saknas.');
+                $this->setEmptyPasswordMessage();
             }
-            if(mb_strlen($userName) != mb_strlen(strip_tags($userName)) ||
+            else if(mb_strlen($userName) != mb_strlen(strip_tags($userName)) ||
                 mb_strlen($passWord) != mb_strlen(strip_tags($passWord))){
                 $this->username = "";
-                $this->setMessage('Användarnamn/lösenord innehåller otillåtna tecken.');
+                $this->setNotAllowedMessage();
+            }
+            else{
+                $this->isUserInputValidated = true;
             }
         }
-        return $this->renderLoginFrom();
-
     }
 
-
-
-    public function userSubmitsLoginData(){
-        return isset($_POST[self::$submitLogin]);
+    public function setNotValidUserMessage(){
+        $this->responseMessage = "Fel användarnamn eller lösenord.";
+    }
+    public function setEmptyUsernameMessage(){
+        $this->responseMessage = "Användarnamn saknas.";
+    }
+    public function setEmptyPasswordMessage(){
+        $this->responseMessage = "Lösenord saknas.";
+    }
+    public function setEmptyBothMessage(){
+        $this->responseMessage = 'Användarnamn och lösenord saknas.';
+    }
+    public function setNotAllowedMessage(){
+        $this->responseMessage = "Användarnamn/lösenord innehåller otillåtna tecken.";
+    }
+    public function setDatabaseErrorMessage(){
+        $this->responseMessage = "Något gick fel i kontakten med servern. Försök igen.";
     }
 
-    public function getMessage(){
-        return $this->message;
-    }
-
-    public function setMessage($message){
-        $this->message = $message;
-    }
 
     public function getUserName(){
         if(isset($_POST[self::$userName])){
@@ -82,6 +103,9 @@ class LoginView
         }
         return null;
 
+    }
+    public function getIsUserInputValidated(){
+        return $this->isUserInputValidated;
     }
 
     public function getPassword(){

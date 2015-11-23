@@ -8,6 +8,10 @@
 
 namespace controllers;
 
+use exceptions\DatabaseErrorException;
+use exceptions\EmptyPasswordException;
+use exceptions\EmptyUsernameException;
+use exceptions\NotAllowedException;
 use models\LoginDAL;
 use models\User;
 use views\LoginView;
@@ -18,31 +22,45 @@ require_once('views/LoginView.php');
 require_once('views/StartView.php');
 require_once('models/User.php');
 require_once('models/LoginDAL.php');
+require_once('controllers/KustAdminController.php');
+
 
 class MasterController
 {
     private $masterView;
-    private $isUserLoggedIn = false;
 
     public function __construct($masterView)
     {
         $this->masterView = $masterView;
-        $startView = new StartView();
         $loginView = new LoginView();
+        $loginModel = new LoginDAL();
 
+        if($this->masterView->userClickedLogin() || $loginView->userSubmitsLoginData() && !$loginModel->isUserLoggedIn()){
+            $this->masterView->renderTemplateHTML($loginView->showLoginFrom());
+            if($loginView->userSubmitsLoginData() && $loginView->getIsUserInputValidated()){
 
-        if($this->masterView->userClickedLogin() || $this->isUserLoggedIn == false){
-            $this->masterView->renderTemplateHTML($loginView->renderHtml($this->isUserLoggedIn));
-            if($loginView->userSubmitsLoginData()){
-                $user = new LoginDAL();
-                $login = $user->tryLogin(new User($loginView->getUserName(), $loginView->getPassword()));
-                var_dump($login);
+                try{
+                    $user = new User($loginView->getUserName(), $loginView->getPassword());
+                    $loginModel->tryLogin($user);
+                }catch (EmptyUsernameException $e){
+                    $loginView->setEmptyUsernameMessage();
+
+                }catch (EmptyPasswordException $e){
+                    $loginView->setEmptyPasswordMessage();
+
+                }catch (NotAllowedException $e){
+                    $loginView->setNotAllowedMessage();
+                }
+                catch (DatabaseErrorException $e){
+                    $loginView->setDatabaseErrorMessage();
+                }
             }
-        }
-        else{
+        }else if($loginModel->isUserLoggedIn()) {
+            return new KustAdminController();
+        }else {
+            $startView = new StartView();
             $this->masterView->renderTemplateHTML($startView->showStartView());
         }
-
     }
 
     public function checkCost(){
