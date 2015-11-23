@@ -11,7 +11,7 @@ namespace views;
 
 class StartView
 {
-    public function renderHtml(){
+    public function showStartView(){
         var_dump("startview");
     }
 }

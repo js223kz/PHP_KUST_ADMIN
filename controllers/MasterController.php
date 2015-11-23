@@ -10,43 +10,43 @@ namespace controllers;
 
 use models\LoginDAL;
 use models\User;
+use views\LoginView;
+use views\StartView;
 
 require_once('views/MasterView.php');
 require_once('views/LoginView.php');
 require_once('views/StartView.php');
-require_once('commons/DatabaseConnection.php');
 require_once('models/User.php');
 require_once('models/LoginDAL.php');
 
 class MasterController
 {
-    private $applicationTemplateView;
+    private $masterView;
     private $isUserLoggedIn = false;
 
-
-
-    public function __construct($applicationTemplateView)
+    public function __construct($masterView)
     {
-        $this->applicationTemplateView = $applicationTemplateView;
+        $this->masterView = $masterView;
+        $startView = new StartView();
+        $loginView = new LoginView();
 
-        $startView = new \views\StartView();
-        $loginView = new \views\LoginView();
 
-        //$this->checkCost();
-        if($applicationTemplateView->userClickedLogin() || $this->isUserLoggedIn == false){
-            $applicationTemplateView->renderTemplateHTML($loginView->renderHtml($this->isUserLoggedIn));
+        if($this->masterView->userClickedLogin() || $this->isUserLoggedIn == false){
+            $this->masterView->renderTemplateHTML($loginView->renderHtml($this->isUserLoggedIn));
             if($loginView->userSubmitsLoginData()){
                 $user = new LoginDAL();
-                $user->tryLogin(new User($loginView->getUserName(), $loginView->getPassword()));
+                $login = $user->tryLogin(new User($loginView->getUserName(), $loginView->getPassword()));
+                var_dump($login);
             }
         }
         else{
-            $this->applicationTemplateView->renderTemplateHTML($startView->renderHtml());
+            $this->masterView->renderTemplateHTML($startView->showStartView());
         }
 
     }
 
     public function checkCost(){
+        //$this->checkCost();
         $timeTarget = 0.05; // 50 milliseconds
 
         $cost = 8;

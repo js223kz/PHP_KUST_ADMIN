@@ -23,25 +23,41 @@ class LoginDAL
     }
 
     public function tryLogin($user){
+        $username = $user->getUsername();
+        $password =$user->getPassword();
+        var_dump($username);
 
-        /*$query = $this->dbConnection->prepare('SET @username := ?');
-        if ($query === FALSE) {
-            throw new \Exception($this->database->error);
+        $this->dbConnection->query("SET @username = " . "'" . $this->dbConnection->real_escape_string($username) . "'");
+        $this->dbConnection->query("SET @result := FALSE");
+
+        if(!$this->dbConnection->query('CALL login(@username, @result)')){
+            die("CALL failed: (" . $this->dbConnection->errno . ") " . $this->dbConnection->error);
         }
-        $query->bind_param('s', $username);
-        $query->execute();
 
-        //bind second parameter to session variable @password
-        $query = $this->dbConnection->prepare('SET @password := ?');
-        if ($query === FALSE) {
-            throw new \Exception($this->database->error);
+        // Fetch OUT parameters
+        if (!($res = $this->dbConnection->query("SELECT @result AS result"))){
+            die("Fetch failed: (" .$this->dbConnection->errno . ") " . $this->dbConnection->error);
         }
-        $query->bind_param('s', $password);
-        $query->execute();
 
-        //execute stored procedure
-        $this->dbConnection->query('call register_user(@username, @password)');
-        $this->dbConnection->close();*/
+        $row = $res->fetch_assoc();
+        $this->dbConnection->close();
+
+        if(password_verify($password, $row['result'])){
+            return true;
+        }else{
+            return false;
+        }
+
+
+    }
+
+    private function hashPassword($password)
+    {
+        $options = [
+            'cost' => 9,
+        ];
+        $password = password_hash($password, PASSWORD_DEFAULT, $options);//can return null
+        return $password;
     }
 
 }
