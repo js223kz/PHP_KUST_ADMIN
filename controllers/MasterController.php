@@ -8,62 +8,47 @@
 
 namespace controllers;
 
-use exceptions\DatabaseErrorException;
-use exceptions\EmptyPasswordException;
-use exceptions\EmptyUsernameException;
-use exceptions\NotAllowedException;
-use models\LoginDAL;
-use models\User;
 use views\LoginView;
+use views\LogoutView;
+use views\MasterView;
 use views\StartView;
 
 require_once('views/MasterView.php');
 require_once('views/LoginView.php');
+require_once('views/LogoutView.php');
 require_once('views/StartView.php');
-require_once('models/User.php');
-require_once('models/LoginDAL.php');
-require_once('controllers/KustAdminController.php');
+require_once('controllers/LoginController.php');
 
 
 class MasterController
 {
-    private $masterView;
 
-    public function __construct($masterView)
+    public function __construct()
     {
-        $this->masterView = $masterView;
-        $loginView = new LoginView();
-        $loginModel = new LoginDAL();
+        $masterView = new MasterView();
+        $startView = new StartView();
+        $loginView= new LoginView();
+        $logoutView= new LogoutView();
 
-        if($this->masterView->userClickedLogin() || $loginView->userSubmitsLoginData() && !$loginModel->isUserLoggedIn()){
-            $this->masterView->renderTemplateHTML($loginView->showLoginFrom());
-            if($loginView->userSubmitsLoginData() && $loginView->getIsUserInputValidated()){
-
-                try{
-                    $user = new User($loginView->getUserName(), $loginView->getPassword());
-                    $loginModel->tryLogin($user);
-                }catch (EmptyUsernameException $e){
-                    $loginView->setEmptyUsernameMessage();
-
-                }catch (EmptyPasswordException $e){
-                    $loginView->setEmptyPasswordMessage();
-
-                }catch (NotAllowedException $e){
-                    $loginView->setNotAllowedMessage();
-                }
-                catch (DatabaseErrorException $e){
-                    $loginView->setDatabaseErrorMessage();
-                }
-            }
-        }else if($loginModel->isUserLoggedIn()) {
-            return new KustAdminController();
-        }else {
-            $startView = new StartView();
-            $this->masterView->renderTemplateHTML($startView->showStartView());
+        if($masterView->userClickedLogin()){
+            $masterView->renderTemplateHTML($loginView->showLoginFrom(), false);
         }
+        else if($masterView->userClickedLogout()){
+            $masterView->renderTemplateHTML($logoutView->showLogoutForm(), false);
+        }
+        //Det är när jag går från LoginController och vidare det blir knas
+        else if($loginView->userSubmitsLoginData() && $loginView->getIsUserInputValidated()){
+            $masterView->renderTemplateHTML($loginView->showLoginFrom(), false);
+            return new LoginController($loginView, $masterView);
+        }
+        else{
+            $masterView->renderTemplateHTML($startView->showStartView(), false);
+        }
+
+
     }
 
-    public function checkCost(){
+/*public function checkCost(){
         //$this->checkCost();
         $timeTarget = 0.05; // 50 milliseconds
 
@@ -76,7 +61,7 @@ class MasterController
         } while (($end - $start) < $timeTarget);
 
         echo "Appropriate Cost Found: " . $cost . "\n";
-    }
+    }*/
 
 
 }

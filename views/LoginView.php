@@ -16,8 +16,12 @@ class LoginView
     private static $passWord = 'LoginView::Password';
     private static $submitLogin = 'LoginView::Submitlogin';
     private $responseMessage;
-    private $username;
     private $isUserInputValidated = false;
+
+    //purely for user friendly reason
+    //keeping entered username visible
+    // in input field through POST
+    private $username;
 
     public function __construct()
     {
@@ -46,6 +50,36 @@ class LoginView
         return $this->responseMessage;
     }
 
+    public function getUserName(){
+        if(isset($_POST[self::$userName])){
+            return $_POST[self::$userName];
+        }
+        return null;
+    }
+    public function getPassword(){
+        if(isset($_POST[self::$passWord])){
+            return $_POST[self::$passWord];
+        }
+        return null;
+    }
+
+    /**
+     * @return bool to MasterController if
+     * user input is validated
+     */
+    public function getIsUserInputValidated(){
+        return $this->isUserInputValidated;
+    }
+
+
+    /**
+     * sets appropriate response message
+     * according to user input
+     * only allows MasterController to
+     * create new User object if user input
+     * is validated
+     * Called from constructor
+     */
     public function setReponseMessage(){
 
         if(isset($_POST[self::$submitLogin])){
@@ -68,7 +102,7 @@ class LoginView
             }
             else if(mb_strlen($userName) != mb_strlen(strip_tags($userName)) ||
                 mb_strlen($passWord) != mb_strlen(strip_tags($passWord))){
-                $this->username = "";
+                $this->username = "Fy!";
                 $this->setNotAllowedMessage();
             }
             else{
@@ -94,24 +128,5 @@ class LoginView
     }
     public function setDatabaseErrorMessage(){
         $this->responseMessage = "Något gick fel i kontakten med servern. Försök igen.";
-    }
-
-
-    public function getUserName(){
-        if(isset($_POST[self::$userName])){
-            return $_POST[self::$userName];
-        }
-        return null;
-
-    }
-    public function getIsUserInputValidated(){
-        return $this->isUserInputValidated;
-    }
-
-    public function getPassword(){
-        if(isset($_POST[self::$passWord])){
-            return $_POST[self::$passWord];
-        }
-        return null;
     }
 }
