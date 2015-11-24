@@ -20,8 +20,8 @@ class KustAdminController
     public function __construct($masterView, $loginDAL){
 
         if($loginDAL->isUserLoggedIn() && $loginDAL->getRemoteAddress() == $_SERVER['REMOTE_ADDR']){
-            $this->kustStartView = new KustAdminView();
-            $masterView->renderTemplateHTML($this->kustStartView->renderView(), true);
+            $kustStartView = new KustAdminView();
+            $masterView->renderTemplateHTML($kustStartView->renderView(), true);
         }else{
 
         }

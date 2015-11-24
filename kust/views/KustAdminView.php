@@ -13,7 +13,6 @@ class KustAdminView
 {
     public function __construct()
     {
-        $this->renderView();
     }
 
     public function renderView(){

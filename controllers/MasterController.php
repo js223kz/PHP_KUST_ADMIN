@@ -9,6 +9,7 @@
 namespace controllers;
 
 use models\LoginDAL;
+use views\KustAdminView;
 use views\LoginView;
 use views\LogoutView;
 use views\MasterView;
@@ -21,7 +22,7 @@ require_once('views/StartView.php');
 require_once('controllers/LoginController.php');
 require_once('models/LoginDAL.php');
 require_once('kust/controllers/KustAdminController.php');
-
+require_once('kust/views/KustAdminView.php');
 
 class MasterController
 {
@@ -40,15 +41,17 @@ class MasterController
                 $masterView->renderTemplateHTML($loginView->showLoginFrom(), false);
             }
             else if($loginView->userSubmitsLoginData() && $isInputValidated){
-                return new LoginController($loginView, $masterView);
+                return new LoginController($loginView, $loginDAL);
             }
-            else if($masterView->userClickedLogout()){
-                $masterView->renderTemplateHTML($logoutView->showLogoutForm(), false);
-
-            }else{
+            else{
                 $masterView->renderTemplateHTML($startView->showStartView(), false);
             }
-        }else{
+        }
+        else if($masterView->userClickedLogout()) {
+            $loginDAL->unsetSession();
+            $loginView->redirect();
+        }
+        else{
             return new KustAdminController($masterView, $loginDAL);
         }
     }
