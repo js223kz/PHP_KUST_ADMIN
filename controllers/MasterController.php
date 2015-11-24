@@ -8,6 +8,7 @@
 
 namespace controllers;
 
+use models\LoginDAL;
 use views\LoginView;
 use views\LogoutView;
 use views\MasterView;
@@ -18,10 +19,13 @@ require_once('views/LoginView.php');
 require_once('views/LogoutView.php');
 require_once('views/StartView.php');
 require_once('controllers/LoginController.php');
+require_once('models/LoginDAL.php');
+require_once('kust/controllers/KustAdminController.php');
 
 
 class MasterController
 {
+
 
     public function __construct()
     {
@@ -29,23 +33,24 @@ class MasterController
         $startView = new StartView();
         $loginView= new LoginView();
         $logoutView= new LogoutView();
+        $loginDAL = new LoginDAL();
 
-        if($masterView->userClickedLogin()){
+
+        if($masterView->userClickedLogin() || $loginView->userSubmitsLoginData() && !$loginView->getIsUserInputValidated()){
             $masterView->renderTemplateHTML($loginView->showLoginFrom(), false);
+        }
+        else if($loginView->userSubmitsLoginData() && $loginView->getIsUserInputValidated()){
+            return new LoginController($loginView, $masterView);
         }
         else if($masterView->userClickedLogout()){
             $masterView->renderTemplateHTML($logoutView->showLogoutForm(), false);
-        }
-        //Det är när jag går från LoginController och vidare det blir knas
-        else if($loginView->userSubmitsLoginData() && $loginView->getIsUserInputValidated()){
-            $masterView->renderTemplateHTML($loginView->showLoginFrom(), false);
-            return new LoginController($loginView, $masterView);
+
+        }else if($loginDAL->isUserLoggedIn()){
+            return new KustAdminController($masterView, $loginDAL);
         }
         else{
             $masterView->renderTemplateHTML($startView->showStartView(), false);
         }
-
-
     }
 
 /*public function checkCost(){

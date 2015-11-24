@@ -15,7 +15,7 @@ require_once('models/LoginDAL.php');
 require_once('models/User.php');
 require_once('views/LoginView.php');
 require_once('views/MasterView.php');
-require_once('kust/controllers/KustAdminController.php');
+
 
 class LoginController
 {
@@ -27,7 +27,7 @@ class LoginController
         $loginDAL = new LoginDAL();
         try {
             $user = new User($loginView->getUserName(), $loginView->getPassword());
-            $loggedIn = $loginDAL->tryLogin($user);
+            $loginDAL->tryLogin($user);
         } catch (EmptyUsernameException $e) {
             $loginView->setEmptyUsernameMessage();
 
@@ -38,11 +38,6 @@ class LoginController
             $loginView->setNotAllowedMessage();
         } catch (DatabaseErrorException $e) {
             $loginView->setDatabaseErrorMessage();
-        }
-
-        //Inne i KustController sätter jag en annan vy, men då kommer alla
-        if($loggedIn == true){
-            return new KustAdminController($masterView, $loginDAL);
         }
     }
 }
