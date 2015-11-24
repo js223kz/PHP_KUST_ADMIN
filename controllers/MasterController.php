@@ -25,8 +25,6 @@ require_once('kust/controllers/KustAdminController.php');
 
 class MasterController
 {
-
-
     public function __construct()
     {
         $masterView = new MasterView();

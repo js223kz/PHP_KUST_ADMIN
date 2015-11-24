@@ -71,6 +71,10 @@ class LoginView
         return $this->isUserInputValidated;
     }
 
+    public function redirect(){
+        header('Location: /');
+    }
+
 
     /**
      * sets appropriate response message

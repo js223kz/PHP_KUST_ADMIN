@@ -41,5 +41,9 @@ class LoginController
         } catch (DatabaseErrorException $e) {
             $loginView->setDatabaseErrorMessage();
         }
+
+        $loginView->redirect();
     }
+
+
 }
