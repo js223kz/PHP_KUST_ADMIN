@@ -17,7 +17,7 @@ class KustAdminView
     }
 
     public function renderView(){
-        return "hello view";
+        var_dump("KustView");
     }
 
 }

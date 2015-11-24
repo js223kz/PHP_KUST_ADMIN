@@ -35,23 +35,27 @@ class MasterController
         $logoutView= new LogoutView();
         $loginDAL = new LoginDAL();
 
+        $isInputValidated = $loginView->getIsUserInputValidated();
 
-        if($masterView->userClickedLogin() || $loginView->userSubmitsLoginData() && !$loginView->getIsUserInputValidated()){
-            $masterView->renderTemplateHTML($loginView->showLoginFrom(), false);
-        }
-        else if($loginView->userSubmitsLoginData() && $loginView->getIsUserInputValidated()){
-            return new LoginController($loginView, $masterView);
-        }
-        else if($masterView->userClickedLogout()){
-            $masterView->renderTemplateHTML($logoutView->showLogoutForm(), false);
+        if(!$loginDAL->isUserLoggedIn()){
+            if($masterView->userClickedLogin() || $loginView->userSubmitsLoginData() && !$isInputValidated){
+                $masterView->renderTemplateHTML($loginView->showLoginFrom(), false);
+            }
+            else if($loginView->userSubmitsLoginData() && $isInputValidated){
+                return new LoginController($loginView, $masterView);
+            }
+            else if($masterView->userClickedLogout()){
+                $masterView->renderTemplateHTML($logoutView->showLogoutForm(), false);
 
-        }else if($loginDAL->isUserLoggedIn()){
+            }else{
+                $masterView->renderTemplateHTML($startView->showStartView(), false);
+            }
+        }else{
             return new KustAdminController($masterView, $loginDAL);
         }
-        else{
-            $masterView->renderTemplateHTML($startView->showStartView(), false);
-        }
     }
+
+
 
 /*public function checkCost(){
         //$this->checkCost();

@@ -21,8 +21,6 @@ class KustAdminController
 
         if($loginDAL->isUserLoggedIn() && $loginDAL->getRemoteAddress() == $_SERVER['REMOTE_ADDR']){
             $this->kustStartView = new KustAdminView();
-
-            //visar inte bara denna utan också tidigare views
             $masterView->renderTemplateHTML($this->kustStartView->renderView(), true);
         }else{
 
