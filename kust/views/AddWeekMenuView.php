@@ -34,7 +34,6 @@ class AddWeekMenuView
     public function __construct()
     {
         $this->setWeeks();
-        $this->validateUserInput();
     }
 
     public function renderAddWeekMenuButton(){
@@ -55,36 +54,29 @@ class AddWeekMenuView
         $ret = "";
         $ret .=
             "<div>
-                    <form method='post' action=''>
-                        <fieldset>
-                            <legend>Lägg till veckomeny</legend>
-                            <input type='text' name=$this->mon placeholder='Måndag' value='$this->monValue' size='100' required/> </br>
-                            <input type='text' name=$this->tue placeholder='Tisdag' value='$this->tueValue' size='100' required/> </br>
-                            <input type='text' name=$this->wed placeholder='Onsdag' value='$this->wedValue' size='100' required/> </br>
-                            <input type='text' name=$this->thu placeholder='Torsdag'value='$this->thuValue' size='100' required/> </br>
-                            <input type='text' name=$this->fri placeholder='Fredag' value='$this->friValue' size='100' required/> </br>
-                            <input type='submit' name=$this->addWeekMenu value='Spara'/>
-                            <input type='reset' name=$this->addWeekMenu value='Rensa'/>
-                        </fieldset>
-                    </form>
-		        </div>";
+                <form method='post' action=''>
+                    <fieldset>
+                        <legend>Lägg till veckomeny</legend>
+                        <input type='text' name=$this->mon placeholder='Måndag' value='$this->monValue' size='100' required/> </br>
+                        <input type='text' name=$this->tue placeholder='Tisdag' value='$this->tueValue' size='100' required/> </br>
+                        <input type='text' name=$this->wed placeholder='Onsdag' value='$this->wedValue' size='100' required/> </br>
+                        <input type='text' name=$this->thu placeholder='Torsdag'value='$this->thuValue' size='100' required/> </br>
+                        <input type='text' name=$this->fri placeholder='Fredag' value='$this->friValue' size='100' required/> </br>
+                        <input type='submit' name=$this->addWeekMenu value='Spara'/>
+                        <input type='reset' name=$this->addWeekMenu value='Rensa'/>
+                    </fieldset>
+                </form>
+		   </div>";
         return $ret;
     }
 
-    public function validateUserInput(){
-        if(isset($_POST[$this->addWeekMenu])){
-           var_dump($this->monValue);
-
-        }
-
-    }
     public function saveMenu(){
         if(isset($_POST[$this->addWeekMenu])){
-            $this->monValue = $_POST[$this->mon];
-            $this->tueValue = $_POST[$this->tue];
-            $this->wedValue = $_POST[$this->wed];
-            $this->thuValue = $_POST[$this->thu];
-            $this->friValue = $_POST[$this->fri];
+            $this->monValue = strip_tags($_POST[$this->mon]);
+            $this->tueValue = strip_tags($_POST[$this->tue]);
+            $this->wedValue = strip_tags($_POST[$this->wed]);
+            $this->thuValue = strip_tags($_POST[$this->thu]);
+            $this->friValue = strip_tags($_POST[$this->fri]);
             return true;
         }
         return false;

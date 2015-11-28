@@ -19,7 +19,8 @@ class MasterView
 
 
     public function renderTemplateHTML($partialView, $loggedIn){
-        echo '<!DOCTYPE html>
+        echo
+            '<!DOCTYPE html>
           <html>
             <head>
               <meta charset="utf-8">
