@@ -9,14 +9,22 @@
 namespace views;
 
 
+require_once('AddWeekMenuView.php');
+
 class KustAdminView
 {
-    public function __construct()
-    {
-    }
 
-    public function renderView(){
-        var_dump("KustView");
-    }
+    public function renderAdminView(){
 
+
+        $addWeekMenuPartial = new AddWeekMenuView();
+        $html = "";
+        if($addWeekMenuPartial->showMenuForm() || $addWeekMenuPartial->saveMenu()){
+            $html .= $addWeekMenuPartial->renderAddWeekMenuForm();
+        }else {
+            $html .= $addWeekMenuPartial->renderAddWeekMenuButton();
+        }
+
+        return $html;
+    }
 }

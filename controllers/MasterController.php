@@ -57,6 +57,38 @@ class MasterController
     }
 
 
+    /*
+     *
+     * <input type="hidden" name="csrf_token" value="<?php echo generateToken('protectedForm');/>"
+     *
+     *
+     *
+     *
+     * function generateToken($formname){
+        $secretKey='hhhhhhdfsfdsgj';
+        if(!session_id()){
+
+            session_start();
+        }
+        $sessionId = session_id();
+
+        return sha1($formname.$sessionId.$secretKey);
+    }
+
+    function checkToken($token, $formname){
+        return $token === $this->generateToken($formname);
+    }*/
+
+    //validate incoming
+
+    /*if(!empty($_POST['csrf_token'])){
+    if(checkToken($_POST['csrf_token'], 'protectedForm')){
+    //valid form continue
+    }
+
+}*/
+
+
 
 /*public function checkCost(){
         //$this->checkCost();
