@@ -55,7 +55,7 @@ class AddWeekMenuView
     public function renderAddWeekMenuForm(){
         $ret = "";
         $ret .=
-            "<div>
+            "<div id='menuform'>
                 <form method='post' action=''>
                     <fieldset>
                         <legend>Lägg till veckomeny</legend>
@@ -88,16 +88,12 @@ class AddWeekMenuView
         $this->thuValue = strip_tags($_POST[$this->thu]);
         $this->friValue = strip_tags($_POST[$this->fri]);
 
-
         foreach($this->weeks as $week){
             if($week->getStartDay() == $this->selectedWeekValue){
                 return new WeekMenu($week, $this->monValue, $this->tueValue, $this->wedValue, $this->thuValue, $this->friValue);
             }
         }
         return null;
-
-
-
     }
 
     public function showMenuForm(){
