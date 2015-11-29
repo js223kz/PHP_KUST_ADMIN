@@ -9,23 +9,15 @@
 namespace views;
 
 
-require_once('AddWeekMenuView.php');
+use models\Week;
+use models\WeekMenu;
+require_once('kust/models/Week.php');
+require_once('kust/models/WeekMenu.php');
 
 class KustAdminView
 {
 
     public function renderAdminView(){
 
-
-        $addWeekMenuPartial = new AddWeekMenuView();
-        $html = "";
-        if($addWeekMenuPartial->showMenuForm()){
-            $html .= $addWeekMenuPartial->renderAddWeekMenuForm();
-        }else if($addWeekMenuPartial->userWantsToSaveMenu()){
-            $addWeekMenuPartial
-            $html .= $addWeekMenuPartial->renderAddWeekMenuButton();
-        }
-
-        return $html;
     }
 }

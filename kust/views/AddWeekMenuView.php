@@ -9,8 +9,10 @@
 namespace views;
 
 use models\Week;
+use models\WeekMenu;
 
 require_once('kust/models/Week.php');
+require_once('kust/models/WeekMenu.php');
 class AddWeekMenuView
 {
 
@@ -78,13 +80,24 @@ class AddWeekMenuView
         return false;
     }
 
-    public function saveWeekMenu(){
+    public function getWeekMenuToSave(){
         $this->selectedWeekValue = strip_tags($_POST[$this->weekDropDown]);
         $this->monValue = strip_tags($_POST[$this->mon]);
         $this->tueValue = strip_tags($_POST[$this->tue]);
         $this->wedValue = strip_tags($_POST[$this->wed]);
         $this->thuValue = strip_tags($_POST[$this->thu]);
         $this->friValue = strip_tags($_POST[$this->fri]);
+
+
+        foreach($this->weeks as $week){
+            if($week->getStartDay() == $this->selectedWeekValue){
+                return new WeekMenu($week, $this->monValue, $this->tueValue, $this->wedValue, $this->thuValue, $this->friValue);
+            }
+        }
+        return null;
+
+
+
     }
 
     public function showMenuForm(){
@@ -101,7 +114,7 @@ class AddWeekMenuView
 
         foreach($this->weeks as $week){
             $value =  $week->getWeekNumber() . ' | ' . $week->getStartDay() . ' | ' . $week->getEndDay();
-            $ret .= "<option name='$value'>$value</option>";
+            $ret .= "<option name=".$week->getStartDay().">$value</option>";
         }
         $ret .="</select>";
 
