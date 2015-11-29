@@ -12,19 +12,18 @@ use views\KustAdminView;
 require_once('models/LoginDAL.php');
 require_once('kust/views/KustAdminView.php');
 require_once('views/MasterView.php');
+require_once('views/LoginView.php');
 
 class KustAdminController
 {
 
     private $kustStartView;
-    public function __construct($masterView, $loginDAL){
-
-
-        if($loginDAL->isUserLoggedIn() && $loginDAL->getRemoteAddress() == $_SERVER['REMOTE_ADDR']){
+    public function __construct($masterView, $loginView, $loginDAL){
+        if($loginDAL->isUserLoggedIn()){
             $kustStartView = new KustAdminView();
             $masterView->renderTemplateHTML($kustStartView->renderAdminView(), true);
         }else{
-
+            $loginView->redirect();
         }
     }
 

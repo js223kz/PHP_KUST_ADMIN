@@ -19,9 +19,10 @@ class KustAdminView
 
         $addWeekMenuPartial = new AddWeekMenuView();
         $html = "";
-        if($addWeekMenuPartial->showMenuForm() || $addWeekMenuPartial->saveMenu()){
+        if($addWeekMenuPartial->showMenuForm()){
             $html .= $addWeekMenuPartial->renderAddWeekMenuForm();
-        }else {
+        }else if($addWeekMenuPartial->userWantsToSaveMenu()){
+            $addWeekMenuPartial
             $html .= $addWeekMenuPartial->renderAddWeekMenuButton();
         }
 

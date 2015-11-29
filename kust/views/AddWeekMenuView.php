@@ -17,18 +17,18 @@ class AddWeekMenuView
     private $weeks = array();
     private $showMenuForm = 'KustAdminView::showMenuForm';
     private $addWeekMenu = 'KustAdminView::addWeekMenu';
-    private $clearMenuForm = 'KustAdminView::clearmenuForm';
     private $mon = 'KustAdminView::monday';
     private $tue = 'KustAdminView::tuesday';
     private $wed = 'KustAdminView::wednesday';
     private $thu = 'KustAdminView::thursday';
     private $fri = 'KustAdminView::friday';
+    private $weekDropDown = 'KustAdminView::weekDropDown';
     private $monValue = '';
     private $tueValue = '';
     private $wedValue = '';
     private $thuValue = '';
     private $friValue = '';
-    private $errorMessage = "";
+    private $selectedWeekValue = '';
 
 
     public function __construct()
@@ -57,6 +57,7 @@ class AddWeekMenuView
                 <form method='post' action=''>
                     <fieldset>
                         <legend>Lägg till veckomeny</legend>
+                        ".$this->populateDropDownList()."
                         <input type='text' name=$this->mon placeholder='Måndag' value='$this->monValue' size='100' required/> </br>
                         <input type='text' name=$this->tue placeholder='Tisdag' value='$this->tueValue' size='100' required/> </br>
                         <input type='text' name=$this->wed placeholder='Onsdag' value='$this->wedValue' size='100' required/> </br>
@@ -70,16 +71,20 @@ class AddWeekMenuView
         return $ret;
     }
 
-    public function saveMenu(){
+    public function userWantsToSaveMenu(){
         if(isset($_POST[$this->addWeekMenu])){
-            $this->monValue = strip_tags($_POST[$this->mon]);
-            $this->tueValue = strip_tags($_POST[$this->tue]);
-            $this->wedValue = strip_tags($_POST[$this->wed]);
-            $this->thuValue = strip_tags($_POST[$this->thu]);
-            $this->friValue = strip_tags($_POST[$this->fri]);
             return true;
         }
         return false;
+    }
+
+    public function saveWeekMenu(){
+        $this->selectedWeekValue = strip_tags($_POST[$this->weekDropDown]);
+        $this->monValue = strip_tags($_POST[$this->mon]);
+        $this->tueValue = strip_tags($_POST[$this->tue]);
+        $this->wedValue = strip_tags($_POST[$this->wed]);
+        $this->thuValue = strip_tags($_POST[$this->thu]);
+        $this->friValue = strip_tags($_POST[$this->fri]);
     }
 
     public function showMenuForm(){
@@ -89,11 +94,21 @@ class AddWeekMenuView
         return false;
     }
 
-    private function showErrorMessage(){
-        return $this->errorMessage;
+    private function populateDropDownList(){
+        $ret = "";
+        $ret .= "<select name=$this->weekDropDown required>";
+        $ret .= "<option selected disabled>Välj vecka</option>";
+
+        foreach($this->weeks as $week){
+            $value =  $week->getWeekNumber() . ' | ' . $week->getStartDay() . ' | ' . $week->getEndDay();
+            $ret .= "<option name='$value'>$value</option>";
+        }
+        $ret .="</select>";
+
+        return $ret;
     }
 
-    public function setWeeks(){
+    private function setWeeks(){
         date_default_timezone_set("Europe/Stockholm");
         $start_date  = new \DateTime();
         $interval    = new \DateInterval('P1W');

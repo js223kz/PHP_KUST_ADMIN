@@ -52,7 +52,7 @@ class MasterController
             $loginView->redirect();
         }
         else{
-            return new KustAdminController($masterView, $loginDAL);
+            return new KustAdminController($masterView, $loginView, $loginDAL);
         }
     }
 
