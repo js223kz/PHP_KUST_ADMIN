@@ -17,7 +17,7 @@ require_once('commons/DatabaseConnection.php');
 require_once('commons/exceptions/DatabaseErrorException.php');
 class WeekMenuDAL
 {
-    
+
     public function getAllWeekMenues(){
 
         $db = new DatabaseConnection();
@@ -32,6 +32,7 @@ class WeekMenuDAL
         $query->bind_result($id, $object);
         while ($query->fetch()) {
             $weekMenu = unserialize($object);
+            $weekMenu->setId($id);
             array_push($weekMenues, $weekMenu);
         }
         $this->dbConnection->close();
@@ -51,6 +52,19 @@ class WeekMenuDAL
         }
         if(!$query = $this->dbConnection->query('call save_weekmenu(@weekMenu)')){
             throw new DatabaseErrorException($this->dbConnection->error);
+        }
+        $this->dbConnection->close();
+    }
+
+    public function deleteWeekMenu($id){
+        $db = new DatabaseConnection();
+        $this->dbConnection = $db->dbConnection();
+
+       $this->prepareStatement('@id', 'i', $id);
+
+        if (!$this->dbConnection->query('CALL delete_by_id(@id)')) {
+            throw new DatabaseErrorException($this->dbConnection->error);
+
         }
         $this->dbConnection->close();
     }

@@ -11,6 +11,7 @@ namespace models;
 require_once('Week.php');
 class WeekMenu
 {
+    private $id;
     private $week;
     private $monday;
     private $tuesday;
@@ -20,12 +21,22 @@ class WeekMenu
 
     public function __construct($week, $monday, $tuesday, $wednesday, $thursday, $friday)
     {
+        //validera fälten
         $this->week = $week;
         $this->monday = $monday;
         $this->tuesday = $tuesday;
         $this->wednesday = $wednesday;
         $this->thursday = $thursday;
         $this->friday = $friday;
+    }
+
+    public function setId($id){
+        //validera id
+        $this->id = $id;
+    }
+
+    public function getId(){
+        return $this->id;
     }
 
     public function getWeek(){
@@ -51,4 +62,5 @@ class WeekMenu
     public function getFriday(){
         return $this->friday;
     }
+
 }

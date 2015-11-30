@@ -49,14 +49,30 @@ class WeekMenuView
         return $ret;
     }
 
-    public function renderAddWeekMenuForm(){
+    public function renderAddWeekMenuForm($id = null, $weeks = null){
+        $selected = null;
+        if($id != null){
+            foreach($weeks as $week){
+                if($week->getId() == $id){
+                    $weekObject = $week->getWeek();
+                    $this->monValue = $week->getMonday();
+                    $this->tueValue = $week->getTuesday();
+                    $this->wedValue = $week->getWednesday();
+                    $this->thuValue = $week->getThursday();
+                    $this->friValue = $week->getFriday();
+                    $selected = $weekObject->getStartDay();
+
+
+                }
+            }
+        }
         $ret = "";
         $ret .=
             "<div id='menuform'>
                 <form method='post' action=''>
                     <fieldset>
                         <legend>Lägg till veckomeny</legend>
-                        ".$this->populateDropDownList()."
+                        ".$this->populateDropDownList($selected)."
                         <input type='text' name=$this->mon placeholder='Måndag' value='$this->monValue' size='100' required/> </br>
                         <input type='text' name=$this->tue placeholder='Tisdag' value='$this->tueValue' size='100' required/> </br>
                         <input type='text' name=$this->wed placeholder='Onsdag' value='$this->wedValue' size='100' required/> </br>
@@ -95,6 +111,7 @@ class WeekMenuView
 
             }
         }
+        header('location: /');
         return $weekMenu;
     }
 
@@ -105,14 +122,17 @@ class WeekMenuView
         return false;
     }
 
-    private function populateDropDownList(){
+    private function populateDropDownList($selected = null){
         $ret = "";
         $ret .= "<select name=$this->weekDropDown required>";
         $ret .= "<option selected disabled>Välj vecka</option>";
 
         foreach($this->weeks as $week){
             $value =  $week->getWeekNumber() . ' | ' . $week->getStartDay() . ' | ' . $week->getEndDay();
-            $ret .= "<option name=".$week->getStartDay().">$value</option>";
+            if($selected != null && $selected == $week->getStartDay() ){
+                $ret .= "<option selected name=".$week->getStartDay()." value=>$value</option>";
+            }
+            $ret .= "<option name=".$week->getStartDay()." value=>$value</option>";
         }
         $ret .="</select>";
 

@@ -22,7 +22,6 @@ require_once('views/StartView.php');
 require_once('controllers/LoginController.php');
 require_once('models/LoginDAL.php');
 require_once('kust/controllers/KustAdminController.php');
-require_once('kust/views/KustAdminView.php');
 
 class MasterController
 {
