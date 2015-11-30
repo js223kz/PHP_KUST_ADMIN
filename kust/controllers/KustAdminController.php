@@ -7,12 +7,14 @@
  */
 
 namespace controllers;
-use views\AddWeekMenuView;
+use models\WeekMenuDAL;
+use views\WeekMenuView;
 use views\KustAdminView;
 
 require_once('models/LoginDAL.php');
+require_once('kust/models/WeekMenuDAL.php');
 require_once('kust/views/KustAdminView.php');
-require_once('kust/views/AddWeekMenuView.php');
+require_once('kust/views/WeekMenuView.php');
 require_once('views/MasterView.php');
 require_once('views/LoginView.php');
 
@@ -27,7 +29,7 @@ class KustAdminController
     }
 
     public function renderHtml($masterView){
-        $addWeekMenuPartial = new AddWeekMenuView();
+        $addWeekMenuPartial = new WeekMenuView();
         $kustStartView = new KustAdminView();
         $html = "";
 
@@ -35,7 +37,8 @@ class KustAdminController
             $html .= $addWeekMenuPartial->renderAddWeekMenuForm();
         }
         else if($addWeekMenuPartial->userWantsToSaveMenu()){
-            $addWeekMenuPartial->getWeekMenuToSave();
+            $weekMenuDAL = new WeekMenuDAL();
+            $weekMenuDAL->saveWeekMenu($addWeekMenuPartial->getWeekMenuToSave());
             $html .= $addWeekMenuPartial->renderAddWeekMenuButton();
         }else{
             $html .= $addWeekMenuPartial->renderAddWeekMenuButton();

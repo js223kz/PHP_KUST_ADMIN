@@ -13,7 +13,7 @@ use models\WeekMenu;
 
 require_once('kust/models/Week.php');
 require_once('kust/models/WeekMenu.php');
-class AddWeekMenuView
+class WeekMenuView
 {
 
     private $weeks = array();
@@ -39,9 +39,6 @@ class AddWeekMenuView
     }
 
     public function renderAddWeekMenuButton(){
-        if(isset($_SESSION['test'])){
-            var_dump($_SESSION['test']);
-        }
         $ret = "";
         $ret .= "<div>";
         $ret .= " <form method='post' action=''>
@@ -81,19 +78,24 @@ class AddWeekMenuView
     }
 
     public function getWeekMenuToSave(){
+
         $this->selectedWeekValue = strip_tags($_POST[$this->weekDropDown]);
         $this->monValue = strip_tags($_POST[$this->mon]);
         $this->tueValue = strip_tags($_POST[$this->tue]);
         $this->wedValue = strip_tags($_POST[$this->wed]);
         $this->thuValue = strip_tags($_POST[$this->thu]);
         $this->friValue = strip_tags($_POST[$this->fri]);
+        $weekMenu = null;
+        $startday = substr($this->selectedWeekValue, 5, 10);
 
         foreach($this->weeks as $week){
-            if($week->getStartDay() == $this->selectedWeekValue){
-                return new WeekMenu($week, $this->monValue, $this->tueValue, $this->wedValue, $this->thuValue, $this->friValue);
+            if($week->getStartDay() == $startday){
+
+                $weekMenu = new WeekMenu($week, $this->monValue, $this->tueValue, $this->wedValue, $this->thuValue, $this->friValue);
+
             }
         }
-        return null;
+        return $weekMenu;
     }
 
     public function showMenuForm(){
