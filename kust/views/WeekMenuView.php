@@ -18,7 +18,8 @@ class WeekMenuView
 
     private $weeks = array();
     private $showMenuForm = 'KustAdminView::showMenuForm';
-    private $addWeekMenu = 'KustAdminView::addWeekMenu';
+    private static $addWeekMenu = 'KustAdminView::addWeekMenu';
+    private static $updateWeekMenu = 'KustAdminView::updateWeekMenu';
     private $mon = 'KustAdminView::monday';
     private $tue = 'KustAdminView::tuesday';
     private $wed = 'KustAdminView::wednesday';
@@ -30,7 +31,7 @@ class WeekMenuView
     private $wedValue = '';
     private $thuValue = '';
     private $friValue = '';
-    private $selectedWeekValue = '';
+    private $weekId = '';
 
 
     public function __construct()
@@ -51,9 +52,12 @@ class WeekMenuView
 
     public function renderAddWeekMenuForm($id = null, $weeks = null){
         $selected = null;
+        $buttonName = '';
         if($id != null){
+            $buttonName = self::$updateWeekMenu;
             foreach($weeks as $week){
                 if($week->getId() == $id){
+                    $this->weekId = $week->getId();
                     $weekObject = $week->getWeek();
                     $this->monValue = $week->getMonday();
                     $this->tueValue = $week->getTuesday();
@@ -62,9 +66,10 @@ class WeekMenuView
                     $this->friValue = $week->getFriday();
                     $selected = $weekObject->getStartDay();
 
-
                 }
             }
+        }else{
+            $buttonName = self::$addWeekMenu;
         }
         $ret = "";
         $ret .=
@@ -78,8 +83,8 @@ class WeekMenuView
                         <input type='text' name=$this->wed placeholder='Onsdag' value='$this->wedValue' size='100' required/> </br>
                         <input type='text' name=$this->thu placeholder='Torsdag'value='$this->thuValue' size='100' required/> </br>
                         <input type='text' name=$this->fri placeholder='Fredag' value='$this->friValue' size='100' required/> </br>
-                        <input type='submit' name=$this->addWeekMenu value='Spara'/>
-                        <input type='reset' name=$this->addWeekMenu value='Rensa'/>
+                        <input type='submit' name=$buttonName value='Spara'/>
+                        <input type='reset' value='Rensa'/>
                     </fieldset>
                 </form>
 		   </div>";
@@ -87,14 +92,22 @@ class WeekMenuView
     }
 
     public function userWantsToSaveMenu(){
-        if(isset($_POST[$this->addWeekMenu])){
+        if(isset($_POST[self::$addWeekMenu])){
             return true;
         }
         return false;
     }
 
-    public function getWeekMenuToSave(){
+    public function userWantsUpdateMenu(){
+        if(isset($_POST[self::$updateWeekMenu])){
+            return true;
+        }
+        return false;
+    }
 
+    public function getMenu(){
+
+        //måste ha ett id om den ska redigeras
         $this->selectedWeekValue = strip_tags($_POST[$this->weekDropDown]);
         $this->monValue = strip_tags($_POST[$this->mon]);
         $this->tueValue = strip_tags($_POST[$this->tue]);
@@ -107,7 +120,7 @@ class WeekMenuView
         foreach($this->weeks as $week){
             if($week->getStartDay() == $startday){
 
-                $weekMenu = new WeekMenu($week, $this->monValue, $this->tueValue, $this->wedValue, $this->thuValue, $this->friValue);
+                $weekMenu = new WeekMenu($this->weekId, $this->monValue, $this->tueValue, $this->wedValue, $this->thuValue, $this->friValue);
 
             }
         }
@@ -129,10 +142,13 @@ class WeekMenuView
 
         foreach($this->weeks as $week){
             $value =  $week->getWeekNumber() . ' | ' . $week->getStartDay() . ' | ' . $week->getEndDay();
-            if($selected != null && $selected == $week->getStartDay() ){
-                $ret .= "<option selected name=".$week->getStartDay()." value=>$value</option>";
+
+            if($selected != null && $selected == $week->getStartDay()){
+                $ret .= "<option selected name=".$week->getStartDay()." >$value</option>";
+            }else{
+                $ret .= "<option name=".$week->getStartDay().">$value</option>";
             }
-            $ret .= "<option name=".$week->getStartDay()." value=>$value</option>";
+
         }
         $ret .="</select>";
 

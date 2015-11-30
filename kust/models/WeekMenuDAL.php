@@ -56,6 +56,10 @@ class WeekMenuDAL
         $this->dbConnection->close();
     }
 
+    public function updateMenu($menu){
+        var_dump($menu);
+    }
+
     public function deleteWeekMenu($id){
         $db = new DatabaseConnection();
         $this->dbConnection = $db->dbConnection();
