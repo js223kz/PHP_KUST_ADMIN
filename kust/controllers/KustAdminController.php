@@ -20,6 +20,7 @@ require_once('views/LoginView.php');
 
 class KustAdminController
 {
+
     public function __construct($masterView, $loginView, $loginDAL){
         if($loginDAL->isUserLoggedIn()){
             $this->renderHtml($masterView);
@@ -29,6 +30,7 @@ class KustAdminController
     }
 
     public function renderHtml($masterView){
+        $weekMenuDAL = new WeekMenuDAL();
         $addWeekMenuPartial = new WeekMenuView();
         $kustStartView = new KustAdminView();
         $html = "";
@@ -37,10 +39,10 @@ class KustAdminController
             $html .= $addWeekMenuPartial->renderAddWeekMenuForm();
         }
         else if($addWeekMenuPartial->userWantsToSaveMenu()){
-            $weekMenuDAL = new WeekMenuDAL();
             $weekMenuDAL->saveWeekMenu($addWeekMenuPartial->getWeekMenuToSave());
             $html .= $addWeekMenuPartial->renderAddWeekMenuButton();
         }else{
+           $weekMenuDAL->getAllWeekMenues();
             $html .= $addWeekMenuPartial->renderAddWeekMenuButton();
         }
 
