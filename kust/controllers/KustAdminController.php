@@ -44,7 +44,7 @@ class KustAdminController
 
         if($addWeekMenuPartial->showMenuForm()){
             $html .= $listView->showWeekMenuList($this->weekMenues);
-            $html .= $addWeekMenuPartial->renderAddWeekMenuForm();
+            $html .= $addWeekMenuPartial->renderAddMenuForm();
         }
         else if($addWeekMenuPartial->userWantsToSaveMenu()){
             $this->weekMenuDAL->saveWeekMenu($addWeekMenuPartial->getMenu());
@@ -58,14 +58,15 @@ class KustAdminController
                 $listView->userWantsToCancel();
             }
         }else if($listView->userWantsToEditMenu()){
+            $menu = $this->weekMenuDAL->getMenuById($listView->getId());
             $html .= $listView->showWeekMenuList($this->weekMenues);
-            $html .= $addWeekMenuPartial->renderAddWeekMenuForm($listView->getId(), $this->weekMenues);
+            $html .= $addWeekMenuPartial->renderEditMenuForm($menu);
+
             if($addWeekMenuPartial->userWantsUpdateMenu()){
                 $this->weekMenuDAL->updateMenu($addWeekMenuPartial->getMenu());
+            }else{
+                $addWeekMenuPartial->userWantsToCancelUpdate();
             }
-
-
-
         }else{
             $html .= $listView->showWeekMenuList($this->weekMenues);
             $html .= $addWeekMenuPartial->renderAddWeekMenuButton();

@@ -56,8 +56,27 @@ class WeekMenuDAL
         $this->dbConnection->close();
     }
 
+    public function getMenuById($id){
+
+        $db = new DatabaseConnection();
+        $this->dbConnection = $db->dbConnection();
+
+        $query = $this->dbConnection->prepare('CALL get_by_id(?,  @out_id, @out_object)');
+        $query->bind_param('i', $id);
+        $query->execute();
+
+        $select = $this->dbConnection->query('SELECT @out_id, @out_object');
+        $result = $select->fetch_assoc();
+
+        $weekMenu = unserialize($result['@out_object']);
+        $weekMenu->setId($result['@out_id']);
+
+        return $weekMenu;
+    }
+
+
     public function updateMenu($menu){
-        var_dump($menu);
+        var_dump($menu->getId());
     }
 
     public function deleteWeekMenu($id){

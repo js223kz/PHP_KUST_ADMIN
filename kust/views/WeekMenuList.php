@@ -30,7 +30,7 @@ class WeekMenuList
             header('Location: /');
             return true;
         }
-        return false;
+       return false;
     }
 
     public function userWantsToEditMenu(){
@@ -43,7 +43,9 @@ class WeekMenuList
     public function userWantsToCancel(){
         if(isset($_POST[self::$cancel])){
             header('Location: /');
+            return true;
         }
+        return false;
     }
 
     public function getDeleteWeekMenuUrl($id){
@@ -101,7 +103,7 @@ class WeekMenuList
             $editUrl = $this->getEditWeekMenuUrl($id);
             $ret .=
                 " <tr>
-                    <th>Vecka  ".$week->getWeekNumber()." | ".$week->getStartDay()." | ".$week->getEndDay()."</th>
+                    <th>Vecka | ".$week->getWeekNumber()." | ".$week->getStartDay()." | ".$week->getEndDay()."</th>
                     <th><a href=$editUrl>Redigera</a></th>
                     <th><a href=$deleteUrl>Radera</a></th>
                   </tr>

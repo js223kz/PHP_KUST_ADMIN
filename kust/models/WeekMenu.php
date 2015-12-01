@@ -19,9 +19,10 @@ class WeekMenu
     private $thursday;
     private $friday;
 
-    public function __construct($week, $monday, $tuesday, $wednesday, $thursday, $friday)
+    public function __construct($id, $week, $monday, $tuesday, $wednesday, $thursday, $friday)
     {
         //validera fälten
+        $this->id = $id;
         $this->week = $week;
         $this->monday = $monday;
         $this->tuesday = $tuesday;

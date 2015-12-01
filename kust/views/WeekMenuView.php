@@ -20,6 +20,8 @@ class WeekMenuView
     private $showMenuForm = 'KustAdminView::showMenuForm';
     private static $addWeekMenu = 'KustAdminView::addWeekMenu';
     private static $updateWeekMenu = 'KustAdminView::updateWeekMenu';
+    private static $cancelUpdate = 'KustAdminView::cancelUpdate';
+    private static $id = 'KustAdminView::id';
     private $mon = 'KustAdminView::monday';
     private $tue = 'KustAdminView::tuesday';
     private $wed = 'KustAdminView::wednesday';
@@ -39,60 +41,9 @@ class WeekMenuView
         $this->setWeeks();
     }
 
-    public function renderAddWeekMenuButton(){
-        $ret = "";
-        $ret .= "<div>";
-        $ret .= " <form method='post' action=''>
-                     <button name=$this->showMenuForm>Lägg till veckomeny</button>
-                 </form>";
-
-        $ret .= "</div>";
-        return $ret;
-    }
-
-    public function renderAddWeekMenuForm($id = null, $weeks = null){
-        $selected = null;
-        $buttonName = '';
-        if($id != null){
-            $buttonName = self::$updateWeekMenu;
-            foreach($weeks as $week){
-                if($week->getId() == $id){
-                    $this->weekId = $week->getId();
-                    $weekObject = $week->getWeek();
-                    $this->monValue = $week->getMonday();
-                    $this->tueValue = $week->getTuesday();
-                    $this->wedValue = $week->getWednesday();
-                    $this->thuValue = $week->getThursday();
-                    $this->friValue = $week->getFriday();
-                    $selected = $weekObject->getStartDay();
-
-                }
-            }
-        }else{
-            $buttonName = self::$addWeekMenu;
-        }
-        $ret = "";
-        $ret .=
-            "<div id='menuform'>
-                <form method='post' action=''>
-                    <fieldset>
-                        <legend>Lägg till veckomeny</legend>
-                        ".$this->populateDropDownList($selected)."
-                        <input type='text' name=$this->mon placeholder='Måndag' value='$this->monValue' size='100' required/> </br>
-                        <input type='text' name=$this->tue placeholder='Tisdag' value='$this->tueValue' size='100' required/> </br>
-                        <input type='text' name=$this->wed placeholder='Onsdag' value='$this->wedValue' size='100' required/> </br>
-                        <input type='text' name=$this->thu placeholder='Torsdag'value='$this->thuValue' size='100' required/> </br>
-                        <input type='text' name=$this->fri placeholder='Fredag' value='$this->friValue' size='100' required/> </br>
-                        <input type='submit' name=$buttonName value='Spara'/>
-                        <input type='reset' value='Rensa'/>
-                    </fieldset>
-                </form>
-		   </div>";
-        return $ret;
-    }
-
     public function userWantsToSaveMenu(){
         if(isset($_POST[self::$addWeekMenu])){
+            header('Location: /');
             return true;
         }
         return false;
@@ -105,9 +56,95 @@ class WeekMenuView
         return false;
     }
 
-    public function getMenu(){
+    public function userWantsToCancelUpdate(){
+        if(isset($_POST[self::$cancelUpdate])){
+            header('Location: /');
+            return true;
+        }
+        return false;
+    }
 
-        //måste ha ett id om den ska redigeras
+    public function renderAddWeekMenuButton(){
+        $ret = "";
+        $ret .= "<div>";
+        $ret .= " <form method='post' action=''>
+                     <button name=$this->showMenuForm>Lägg till veckomeny</button>
+                 </form>";
+
+        $ret .= "</div>";
+        return $ret;
+    }
+
+    public function renderInputFields($menu = null){
+        if($menu != null){
+            $this->weekId = $menu->getId();
+            $this->monValue = $menu->getMonday();
+            $this->tueValue = $menu->getTuesday();
+            $this->wedValue = $menu->getWednesday();
+            $this->thuValue = $menu->getThursday();
+            $this->friValue = $menu->getFriday();
+        }
+
+        $ret = "";
+        $ret .=
+            "
+            <input type='text' name=$this->mon placeholder='Måndag' value='$this->monValue' size='100' required/> </br>
+            <input type='text' name=$this->tue placeholder='Tisdag' value='$this->tueValue' size='100' required/> </br>
+            <input type='text' name=$this->wed placeholder='Onsdag' value='$this->wedValue' size='100' required/> </br>
+            <input type='text' name=$this->thu placeholder='Torsdag'value='$this->thuValue' size='100' required/> </br>
+            <input type='text' name=$this->fri placeholder='Fredag' value='$this->friValue' size='100' required/> </br>";
+        return $ret;
+    }
+
+    public function renderAddMenuForm(){
+        $ret = "";
+        $ret .=
+            "<div id='menuform'>
+                <form method='post' action=''>
+                    <fieldset>
+                        <legend>Lägg till veckomeny</legend>
+                        ".$this->populateDropDownList()."
+                        ".$this->renderInputFields()."
+
+                        <input type='submit' name=".self::$addWeekMenu." value='Spara'/>
+                        <input type='reset' value='Rensa'/>
+                    </fieldset>
+                </form>
+            </div>";
+
+        return $ret;
+    }
+
+    public function renderEditMenuForm($menu){
+        $week = $menu->getWeek();
+        $id = $menu->getId();
+        $selected = $week->getStartDay();
+        $ret = "";
+        $ret .=
+            "<div id='menuform'>
+                <form method='post' action=''>
+                    <fieldset>
+                        <legend>Redigera veckomeny</legend>
+                        ".$this->populateDropDownList($selected)."
+                        ".$this->renderInputFields($menu)."
+                        <input type='hidden' name=".self::$id." value='$id'/>
+                        <input type='submit' name=".self::$updateWeekMenu." value='Spara'/>
+                        <input type='submit' name=".self::$cancelUpdate." value='Ångra'/>
+                    </fieldset>
+                </form>
+            </div>";
+
+        return $ret;
+    }
+
+
+    public function getMenu(){
+        $id = 0;
+
+        if(isset($_POST[self::$id])){
+            $id = strip_tags($_POST[self::$id]);
+        }
+
         $this->selectedWeekValue = strip_tags($_POST[$this->weekDropDown]);
         $this->monValue = strip_tags($_POST[$this->mon]);
         $this->tueValue = strip_tags($_POST[$this->tue]);
@@ -120,19 +157,14 @@ class WeekMenuView
         foreach($this->weeks as $week){
             if($week->getStartDay() == $startday){
 
-                $weekMenu = new WeekMenu($this->weekId, $this->monValue, $this->tueValue, $this->wedValue, $this->thuValue, $this->friValue);
-
+                $weekMenu = new WeekMenu($id, $week, $this->monValue, $this->tueValue, $this->wedValue, $this->thuValue, $this->friValue);
             }
         }
-        header('location: /');
         return $weekMenu;
     }
 
     public function showMenuForm(){
-        if(isset($_POST[$this->showMenuForm])){
-            return true;
-        }
-        return false;
+        return isset($_POST[$this->showMenuForm]);
     }
 
     private function populateDropDownList($selected = null){
