@@ -16,6 +16,9 @@ require_once('commons/exceptions/EmptyUsernameException.php');
 require_once('commons/exceptions/NotAllowedException.php');
 
 
+//creates user object and validate
+//input a second time
+//Logs in user via LoginDAL
 class User
 {
     private $userName;
@@ -36,7 +39,6 @@ class User
             mb_strlen($password) != mb_strlen(strip_tags($password))){
             throw new NotAllowedException;
         }
-
         $this->userName = $username;
         $this->passWord = $password;
     }
@@ -44,6 +46,7 @@ class User
     public function getUsername(){
         return $this->userName;
     }
+
     public function getPassword(){
         return $this->passWord;
     }

@@ -17,7 +17,6 @@ use views\StartView;
 
 require_once('views/MasterView.php');
 require_once('views/LoginView.php');
-require_once('views/LogoutView.php');
 require_once('views/StartView.php');
 require_once('controllers/LoginController.php');
 require_once('models/LoginDAL.php');
@@ -32,7 +31,6 @@ class MasterController
         $masterView = new MasterView();
         $startView = new StartView();
         $loginView= new LoginView();
-        $logoutView= new LogoutView();
         $loginDAL = new LoginDAL();
 
         $isInputValidated = $loginView->getIsUserInputValidated();

@@ -18,10 +18,14 @@ require_once('commons/exceptions/DatabaseErrorException.php');
 class WeekMenuDAL
 {
 
-    public function getAllWeekMenues(){
+    private $dbConnection;
 
+    public function __construct(){
         $db = new DatabaseConnection();
         $this->dbConnection = $db->dbConnection();
+    }
+
+    public function getAllWeekMenues(){
 
         $weekMenues = array();
         $query = $this->dbConnection->prepare("CALL select_all()");
@@ -40,8 +44,6 @@ class WeekMenuDAL
     }
 
     public function saveWeekMenu($newWeekMenu){
-        $db = new DatabaseConnection();
-        $this->dbConnection = $db->dbConnection();
 
         $weekMenu = serialize($newWeekMenu);
         try {
@@ -58,9 +60,6 @@ class WeekMenuDAL
 
     public function getMenuById($id){
 
-        $db = new DatabaseConnection();
-        $this->dbConnection = $db->dbConnection();
-
         $query = $this->dbConnection->prepare('CALL get_by_id(?,  @out_id, @out_object)');
         $query->bind_param('i', $id);
         $query->execute();
@@ -76,8 +75,6 @@ class WeekMenuDAL
 
 
     public function updateMenu($upDatedMenu){
-        $db = new DatabaseConnection();
-        $this->dbConnection = $db->dbConnection();
 
         $id = $upDatedMenu->getId();
         $weekMenu = serialize($upDatedMenu);
@@ -95,10 +92,8 @@ class WeekMenuDAL
     }
 
     public function deleteWeekMenu($id){
-        $db = new DatabaseConnection();
-        $this->dbConnection = $db->dbConnection();
 
-       $this->prepareStatement('@id', 'i', $id);
+        $this->prepareStatement('@id', 'i', $id);
 
         if (!$this->dbConnection->query('CALL delete_by_id(@id)')) {
             throw new DatabaseErrorException($this->dbConnection->error);
@@ -107,7 +102,7 @@ class WeekMenuDAL
         $this->dbConnection->close();
     }
 
-    //prepare and bind insert parameter
+    //prepare and bind insert parameter (helper method)
     private function prepareStatement($paramName, $paramType, $value){
         $query = $this->dbConnection->prepare('SET' . $paramName .  ':= ?');
         if ($query === FALSE) {
@@ -116,5 +111,4 @@ class WeekMenuDAL
         $query->bind_param($paramType, $value);
         $query->execute();
     }
-
 }

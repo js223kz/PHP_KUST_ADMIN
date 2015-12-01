@@ -10,7 +10,9 @@ namespace views;
 
 require_once('models/LoginDAL.php');
 require_once('views/LoginView.php');
-require_once('views/LogoutView.php');
+
+//Masterview to render those elements
+//present on every page
 class MasterView
 {
 
@@ -24,7 +26,7 @@ class MasterView
           <html>
             <head>
               <meta charset="utf-8">
-              <link rel="stylesheet" type="text/css" href="css/styles.css" />
+              <link rel="stylesheet" type="text/css" href="/css/Styles.css" />
             </head>
             <body>
                 <header>

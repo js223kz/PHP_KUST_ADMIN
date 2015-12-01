@@ -34,3 +34,4 @@ node_modules
 sessions
 
 /Settings.php
+/.htaccess

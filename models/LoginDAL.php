@@ -15,6 +15,8 @@ require_once('commons/DatabaseConnection.php');
 require_once('commons/exceptions/DatabaseErrorException.php');
 require_once('models/User.php');
 
+//class that handles user authentication
+//and corresponds with database
 class LoginDAL
 {
     private $dbConnection;
@@ -36,7 +38,6 @@ class LoginDAL
         //call stored procedure
         if (!$this->dbConnection->query('CALL login(@username, @password)')) {
             throw new DatabaseErrorException($this->dbConnection->error);
-
         }
 
         // Fetch OUT parameters
@@ -60,8 +61,7 @@ class LoginDAL
     }
 
     public function isUserLoggedIn(){
-        if(isset($_SESSION[self::$isUserLoggedIn]) &&
-            isset($_SESSION[self::$remoteAddress])){
+        if(isset($_SESSION[self::$isUserLoggedIn])){
             return true;
         }
         return false;
@@ -78,9 +78,5 @@ class LoginDAL
         }
     session_destroy();
     }
-    public function getRemoteAddress(){
-        if(isset($_SESSION[self::$remoteAddress])){
-            return $_SESSION[self::$remoteAddress];
-        }
-    }
+
 }

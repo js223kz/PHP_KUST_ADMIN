@@ -34,6 +34,8 @@ class WeekMenuView
     private $thuValue = '';
     private $friValue = '';
     private $weekId = '';
+    private $errorMessage;
+
 
 
     public function __construct()
@@ -63,6 +65,14 @@ class WeekMenuView
             return true;
         }
         return false;
+    }
+
+    public function setErrorMessage(){
+        $this->errorMessage = "Något gick fel med kontakten till databasen. Försök igen.";
+    }
+
+    public function getErrorMessage(){
+        return $this->errorMessage;
     }
 
     public function renderAddWeekMenuButton(){
@@ -98,7 +108,7 @@ class WeekMenuView
     }
 
     public function renderAddMenuForm(){
-        $ret = "";
+        $ret = $this->getErrorMessage();
         $ret .=
             "<div id='menuform'>
                 <form method='post' action=''>
@@ -120,7 +130,7 @@ class WeekMenuView
         $week = $menu->getWeek();
         $id = $menu->getId();
         $selected = $week->getStartDay();
-        $ret = "";
+        $ret = $this->getErrorMessage();
         $ret .=
             "<div id='menuform'>
                 <form method='post' action=''>

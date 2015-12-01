@@ -7,6 +7,7 @@
  */
 
 namespace controllers;
+use exceptions\DatabaseErrorException;
 use models\WeekMenuDAL;
 use views\KustListView;
 use views\WeekMenuList;
@@ -29,48 +30,83 @@ class KustAdminController
 
         if($loggedIn){
             $this->weekMenuDAL = new WeekMenuDAL();
+
+            //gets all weekmenues from database
             $this->weekMenues = $this->weekMenuDAL->getAllWeekMenues();
             $this->checkUserChoice($masterView, $loggedIn);
         }
     }
 
+    /**
+     * @param $masterView
+     * @param $loggedIn checks to se if user is logged in
+     * @throws \exceptions\DatabaseErrorException
+     * This method checks what user wants to do an renders
+     * different partial views accordingly
+     */
     public function checkUserChoice($masterView, $loggedIn){
-        if($loggedIn){
 
+        if($loggedIn){
+            //creates new partial views
             $menuForm = new WeekMenuView();
             $listView = new WeekMenuList();
             $html = "";
 
+            //if user wants to add new menu
             if($menuForm->showMenuForm()){
                 $html .= $listView->showWeekMenuList($this->weekMenues);
                 $html .= $menuForm->renderAddMenuForm();
             }
-            else if($menuForm->userWantsToSaveMenu()){
-                $this->weekMenuDAL->saveWeekMenu($menuForm->getMenu());
-                $html .= $listView->showWeekMenuList($this->weekMenues);
 
+            //if user wants to save menu
+            else if($menuForm->userWantsToSaveMenu() && $loggedIn){
+                try{
+                    $this->weekMenuDAL->saveWeekMenu($menuForm->getMenu());
+                    $html .= $listView->showWeekMenuList($this->weekMenues);
+                }
+                catch(DatabaseErrorException $e){
+                    $menuForm->setErrorMessage();
+                }
             }
+
+            //if user wants to delete menu
             else if($listView->userWantsToDeleteMenu()){
                 $html .=$listView->showDeleteView($this->weekMenues);
 
-                if($listView->userConfirmsDeleteMenu()){
-                    $this->weekMenuDAL->deleteWeekMenu($listView->getId());
+                if($listView->userConfirmsDeleteMenu() && $loggedIn){
+                    try{
+                        $this->weekMenuDAL->deleteWeekMenu($listView->getId());
+                    }
+                    catch(DatabaseErrorException $e){
+                       $menuForm->setErrorMessage();
+                    }
+
                 }else{
                     $listView->userWantsToCancel();
                 }
             }
+
+            //if user wants to edit menu
             else if($listView->userWantsToEditMenu()){
                 $menu = $this->weekMenuDAL->getMenuById($listView->getId());
                 $html .= $listView->showWeekMenuList($this->weekMenues);
                 $html .= $menuForm->renderEditMenuForm($menu);
 
                 if($menuForm->userWantsUpdateMenu()){
-                    $this->weekMenuDAL->updateMenu($menuForm->getMenu());
+                    try{
+                        $this->weekMenuDAL->updateMenu($menuForm->getMenu());
+                    }
+                    catch (DatabaseErrorException $e){
+                        $menuForm->setErrorMessage();
+                    }
+
                 }
                 else{
                     $menuForm->userWantsToCancelUpdate();
                 }
             }
+
+            //default
             else{
                 $html .= $listView->showWeekMenuList($this->weekMenues);
                 $html .= $menuForm->renderAddWeekMenuButton();

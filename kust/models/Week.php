@@ -8,7 +8,7 @@
 
 namespace models;
 
-
+//class that takes values from drop down list
 class Week
 {
     private $weekNumber;
