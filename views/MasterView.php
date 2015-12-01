@@ -24,6 +24,7 @@ class MasterView
           <html>
             <head>
               <meta charset="utf-8">
+              <link rel="stylesheet" type="text/css" href="css/styles.css" />
             </head>
             <body>
                 <header>
@@ -34,6 +35,9 @@ class MasterView
                 <div class="container">
                 '.$partialView.'
                 </div>
+                <footer>
+                <p>Skapad av Johanna js223kz@student.lnu.se</p>
+                </footer>
              </body>
           </html>
     ';
@@ -54,12 +58,12 @@ class MasterView
     }
 
     public function showLoginLogout($loggedIn){
-        $ret = '';
+        $ret = "";
         if($loggedIn){
-            $ret .=   '<input type="submit" value="Logout" name='.self::$logout.'>';
+            $ret .=   '<input class="loginbutton" type="submit" value="Logout" name='.self::$logout.'>';
 
         }else{
-            $ret .=   '<input type="submit" value="Login" name='.self::$login.'>';
+            $ret .=   '<input class="loginbutton" type="submit" value="Login" name='.self::$login.'>';
         }
         return $ret;
     }

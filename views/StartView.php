@@ -12,5 +12,11 @@ namespace views;
 class StartView
 {
     public function showStartView(){
+
+        $ret =
+            "<div class='startbodycontainer'>
+                <h1 class='startbodytext'>Johannas CMS</h1>
+            </div>";
+        return $ret;
     }
 }

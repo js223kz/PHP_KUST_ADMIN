@@ -25,54 +25,57 @@ class KustAdminController
     private $weekMenues;
 
     public function __construct($masterView, $loginView, $loginDAL){
+        $loggedIn = $loginDAL->isUserLoggedIn();
 
-        if($loginDAL->isUserLoggedIn()){
+        if($loggedIn){
             $this->weekMenuDAL = new WeekMenuDAL();
             $this->weekMenues = $this->weekMenuDAL->getAllWeekMenues();
-            $this->renderHtml($masterView);
-        }else{
-            //Den här måste göras på annat sätt
-            $loginView->redirect();
+            $this->checkUserChoice($masterView, $loggedIn);
         }
     }
 
-    public function renderHtml($masterView){
+    public function checkUserChoice($masterView, $loggedIn){
+        if($loggedIn){
 
-        $addWeekMenuPartial = new WeekMenuView();
-        $listView = new WeekMenuList();
-        $html = "";
+            $menuForm = new WeekMenuView();
+            $listView = new WeekMenuList();
+            $html = "";
 
-        if($addWeekMenuPartial->showMenuForm()){
-            $html .= $listView->showWeekMenuList($this->weekMenues);
-            $html .= $addWeekMenuPartial->renderAddMenuForm();
-        }
-        else if($addWeekMenuPartial->userWantsToSaveMenu()){
-            $this->weekMenuDAL->saveWeekMenu($addWeekMenuPartial->getMenu());
-            $html .= $listView->showWeekMenuList($this->weekMenues);
-
-        }else if($listView->userWantsToDeleteMenu()){
-            $html .=$listView->showDeleteView($this->weekMenues);
-            if($listView->userConfirmsDeleteMenu()){
-                $this->weekMenuDAL->deleteWeekMenu($listView->getId());
-            }else{
-                $listView->userWantsToCancel();
+            if($menuForm->showMenuForm()){
+                $html .= $listView->showWeekMenuList($this->weekMenues);
+                $html .= $menuForm->renderAddMenuForm();
             }
-        }else if($listView->userWantsToEditMenu()){
-            $menu = $this->weekMenuDAL->getMenuById($listView->getId());
-            $html .= $listView->showWeekMenuList($this->weekMenues);
-            $html .= $addWeekMenuPartial->renderEditMenuForm($menu);
+            else if($menuForm->userWantsToSaveMenu()){
+                $this->weekMenuDAL->saveWeekMenu($menuForm->getMenu());
+                $html .= $listView->showWeekMenuList($this->weekMenues);
 
-            if($addWeekMenuPartial->userWantsUpdateMenu()){
-                $this->weekMenuDAL->updateMenu($addWeekMenuPartial->getMenu());
-            }else{
-                $addWeekMenuPartial->userWantsToCancelUpdate();
             }
-        }else{
-            $html .= $listView->showWeekMenuList($this->weekMenues);
-            $html .= $addWeekMenuPartial->renderAddWeekMenuButton();
-        }
+            else if($listView->userWantsToDeleteMenu()){
+                $html .=$listView->showDeleteView($this->weekMenues);
 
-        $masterView->renderTemplateHTML($html, true);
+                if($listView->userConfirmsDeleteMenu()){
+                    $this->weekMenuDAL->deleteWeekMenu($listView->getId());
+                }else{
+                    $listView->userWantsToCancel();
+                }
+            }
+            else if($listView->userWantsToEditMenu()){
+                $menu = $this->weekMenuDAL->getMenuById($listView->getId());
+                $html .= $listView->showWeekMenuList($this->weekMenues);
+                $html .= $menuForm->renderEditMenuForm($menu);
+
+                if($menuForm->userWantsUpdateMenu()){
+                    $this->weekMenuDAL->updateMenu($menuForm->getMenu());
+                }
+                else{
+                    $menuForm->userWantsToCancelUpdate();
+                }
+            }
+            else{
+                $html .= $listView->showWeekMenuList($this->weekMenues);
+                $html .= $menuForm->renderAddWeekMenuButton();
+            }
+            $masterView->renderTemplateHTML($html, true);
+        }
     }
-
 }
