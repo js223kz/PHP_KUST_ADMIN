@@ -75,8 +75,23 @@ class WeekMenuDAL
     }
 
 
-    public function updateMenu($menu){
-        var_dump($menu->getId());
+    public function updateMenu($upDatedMenu){
+        $db = new DatabaseConnection();
+        $this->dbConnection = $db->dbConnection();
+
+        $id = $upDatedMenu->getId();
+        $weekMenu = serialize($upDatedMenu);
+        try {
+            $this->prepareStatement('@id', 'i', $id);
+            $this->prepareStatement('@weekMenu', 's', $weekMenu);
+        }
+        catch(\Exception $e){
+            throw new DatabaseErrorException($e->getMessage());
+        }
+        if(!$query = $this->dbConnection->query('call update_by_id(@id, @weekmenu)')){
+            throw new DatabaseErrorException($this->dbConnection->error);
+        }
+        $this->dbConnection->close();
     }
 
     public function deleteWeekMenu($id){

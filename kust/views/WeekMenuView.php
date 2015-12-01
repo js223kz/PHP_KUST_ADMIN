@@ -51,6 +51,7 @@ class WeekMenuView
 
     public function userWantsUpdateMenu(){
         if(isset($_POST[self::$updateWeekMenu])){
+            header('Location: /');
             return true;
         }
         return false;
