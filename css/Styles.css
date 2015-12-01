@@ -13,6 +13,7 @@ header{
     width: 100%;
     min-height: 900px;
     background-color: #CCCCCC;
+    position: relative;
 }
 
 .loginbutton {
@@ -45,5 +46,32 @@ header{
     font-size: 100px;
     color: #777777;
     font-family: Verdana;
+}
+.loginform{
+    margin: auto;
+    margin-top: 50px;
+    width: 15%;
+    padding: 10px;
+
+}
+.loginfieldset{
+    font-family: Verdana;
+    font-size: 16px;
+    width: auto;
+    height: 200px;
+    align-content: center;
+}
+.submitlogin{
+    background-color: #777777;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius:6px;
+    color: #fff;
+    font-family: 'Verdana';
+    font-size: 20px;
+    text-decoration: none;
+    cursor: pointer;
+    border:none;
+
 }
 

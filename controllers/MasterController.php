@@ -23,6 +23,8 @@ require_once('controllers/LoginController.php');
 require_once('models/LoginDAL.php');
 require_once('kust/controllers/KustAdminController.php');
 
+
+//Controller that mostly handles navigation
 class MasterController
 {
     public function __construct()
@@ -36,14 +38,19 @@ class MasterController
         $isInputValidated = $loginView->getIsUserInputValidated();
 
         if(!$loginDAL->isUserLoggedIn()){
+            //user wants to start login process
+            //or enters input data that is not valid
             if($masterView->userClickedLogin() || $loginView->userSubmitsLoginData() && !$isInputValidated){
                 $masterView->renderTemplateHTML($loginView->showLoginFrom(), false);
             }
+            //user has entered pwd and username and input is validated
+            //go to LoginController and try to authenticate user
             else if($loginView->userSubmitsLoginData() && $isInputValidated){
                 return new LoginController($loginView, $loginDAL);
             }
             else{
-                $masterView->renderTemplateHTML($startView->showStartView(), false);
+                //if none of the above keep going back to StartView
+                $masterView->renderTemplateHTML($startView->showStartView($loginDAL->isUserLoggedIn()), false);
             }
         }
         else if($masterView->userClickedLogout()) {
@@ -51,9 +58,26 @@ class MasterController
             $loginView->redirect();
         }
         else{
+            //If user is authenticated and logged in
             return new KustAdminController($masterView, $loginView, $loginDAL);
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /*

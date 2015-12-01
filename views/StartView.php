@@ -8,15 +8,16 @@
 
 namespace views;
 
-
 class StartView
 {
+    //renders a partial view
+    //header, login, logout button
+    //is rendered by MasterView
     public function showStartView(){
-
         $ret =
             "<div class='startbodycontainer'>
                 <h1 class='startbodytext'>Johannas CMS</h1>
             </div>";
         return $ret;
-    }
+     }
 }

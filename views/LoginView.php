@@ -8,10 +8,8 @@
 
 namespace views;
 
-
 class LoginView
 {
-
     private static $userName = 'LoginView::Username';
     private static $passWord = 'LoginView::Password';
     private static $submitLogin = 'LoginView::Submitlogin';
@@ -20,7 +18,7 @@ class LoginView
 
     //purely for user friendly reason
     //keeping entered username visible
-    // in input field through POST
+    //in input field through POST
     private $username;
 
     public function __construct()
@@ -28,24 +26,26 @@ class LoginView
         $this->setReponseMessage();
     }
 
+    //renders a partial view when user
+    //wants to login. Header, login, logout
+    //is rendered in MasterView
     public function showLoginFrom(){
         return '
-        <form method="post" action="">
-            <fieldset>
-                <legend>Logga in</legend>
-                <p>'.$this->getMessage().'</p>
-                <input type="text" id="' . self::$userName . '"name="' . self::$userName . '" value="'.$this->getUserName().'"/>
-                <input type="text" id="' . self::$passWord . '"name="' . self::$passWord . '"/>
-                <input type="submit" id="' . self::$submitLogin . '" name=' . self::$submitLogin . ' value="Login"/>
-			</fieldset>
-		</form>
+            <form class="loginform" method="post" action="">
+                <fieldset class="loginfieldset">
+                    <legend>Logga in</legend>
+                    <p>'.$this->getMessage().'</p>
+                    <input type="text" id="' . self::$userName . '"name="' . self::$userName . '" value="'.$this->getUserName().'"/>
+                    <input type="text" id="' . self::$passWord . '"name="' . self::$passWord . '"/>
+                    <input class="submitlogin" type="submit" id="' . self::$submitLogin . '" name=' . self::$submitLogin . ' value="Login"/>
+                </fieldset>
+            </form>
 		';
     }
 
     public function userSubmitsLoginData(){
         return isset($_POST[self::$submitLogin]);
     }
-
     public function getMessage(){
         return $this->responseMessage;
     }
