@@ -13,7 +13,7 @@ class StartView
     //renders a partial view
     //header, login, logout button
     //is rendered by MasterView
-    public function showStartView(){
+    public function showHomeView(){
         $ret =
             "<div class='startbodycontainer'>
                 <h1 class='startbodytext'>Johannas CMS</h1>

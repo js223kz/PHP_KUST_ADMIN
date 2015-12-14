@@ -15,22 +15,18 @@ require_once('WeekMenu.php');
 require_once('Week.php');
 require_once('commons/DatabaseConnection.php');
 require_once('commons/exceptions/DatabaseErrorException.php');
+
 class WeekMenuDAL
 {
-
-    private $dbConnection;
-
-    public function __construct(){
+    //tried to put code concerning databaseconnection in
+    //a method to prevent DRY, but connection go very instable
+    public function getAllMenues(){
         $db = new DatabaseConnection();
         $this->dbConnection = $db->dbConnection();
-    }
-
-    public function getAllWeekMenues(){
-
         $weekMenues = array();
-        $query = $this->dbConnection->prepare("CALL select_all()");
+        $query =  $this->dbConnection->prepare("CALL select_all()");
         if ($query === FALSE) {
-            throw new \Exception($this->database->error);
+            throw new \Exception( $this->dbConnection->error);
         }
         $query->execute();
         $query->bind_result($id, $object);
@@ -43,8 +39,11 @@ class WeekMenuDAL
         return $weekMenues;
     }
 
-    public function saveWeekMenu($newWeekMenu){
+    public function saveMenu($newWeekMenu){
+        $db = new DatabaseConnection();
+        $this->dbConnection = $db->dbConnection();
 
+        //saves menu as an object in database
         $weekMenu = serialize($newWeekMenu);
         try {
             $this->prepareStatement('@weekMenu', 's', $weekMenu);
@@ -52,13 +51,16 @@ class WeekMenuDAL
         catch(\Exception $e){
             throw new DatabaseErrorException($e->getMessage());
         }
-        if(!$query = $this->dbConnection->query('call save_weekmenu(@weekMenu)')){
-            throw new DatabaseErrorException($this->dbConnection->error);
+        if(!$query =  $this->dbConnection->query('call save_weekmenu(@weekMenu)')){
+            throw new DatabaseErrorException( $this->dbConnection->error);
         }
         $this->dbConnection->close();
     }
 
     public function getMenuById($id){
+        $db = new DatabaseConnection();
+        $this->dbConnection = $db->dbConnection();
+
 
         $query = $this->dbConnection->prepare('CALL get_by_id(?,  @out_id, @out_object)');
         $query->bind_param('i', $id);
@@ -70,11 +72,13 @@ class WeekMenuDAL
         $weekMenu = unserialize($result['@out_object']);
         $weekMenu->setId($result['@out_id']);
 
+        $this->dbConnection->close();
         return $weekMenu;
     }
 
-
     public function updateMenu($upDatedMenu){
+        $db = new DatabaseConnection();
+        $this->dbConnection = $db->dbConnection();
 
         $id = $upDatedMenu->getId();
         $weekMenu = serialize($upDatedMenu);
@@ -91,13 +95,12 @@ class WeekMenuDAL
         $this->dbConnection->close();
     }
 
-    public function deleteWeekMenu($id){
-
+    public function deleteMenu($id){
+        $db = new DatabaseConnection();
+        $this->dbConnection = $db->dbConnection();
         $this->prepareStatement('@id', 'i', $id);
-
         if (!$this->dbConnection->query('CALL delete_by_id(@id)')) {
             throw new DatabaseErrorException($this->dbConnection->error);
-
         }
         $this->dbConnection->close();
     }
@@ -111,4 +114,5 @@ class WeekMenuDAL
         $query->bind_param($paramType, $value);
         $query->execute();
     }
+
 }

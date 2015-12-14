@@ -8,15 +8,18 @@
 
 namespace views;
 
-require_once('kust/models/WeekMenuDAL.php');
 require_once('kust/models/Week.php');
+
+/**
+ * Class WeekMenuList
+ * renders a list of alla weekmenues
+ * and handles user interaction concerning
+ * that list
+ */
 class WeekMenuList
 {
     private static $deleteMenuUrl = 'radera';
     private static $editMenuUrl = 'redigera';
-    private static $deleteConfirmed = 'WeekMenuList::DeleteConfirmed';
-    private static $cancel = 'WeekMenuList::Cancel';
-
 
     public function userWantsToDeleteMenu(){
         if(isset($_GET[self::$deleteMenuUrl])){
@@ -25,24 +28,8 @@ class WeekMenuList
         return false;
     }
 
-    public function userConfirmsDeleteMenu(){
-        if(isset($_POST[self::$deleteConfirmed])){
-            header('Location: /');
-            return true;
-        }
-       return false;
-    }
-
     public function userWantsToEditMenu(){
         if(isset($_GET[self::$editMenuUrl])){
-            return true;
-        }
-        return false;
-    }
-
-    public function userWantsToCancel(){
-        if(isset($_POST[self::$cancel])){
-            header('Location: /');
             return true;
         }
         return false;
@@ -66,37 +53,21 @@ class WeekMenuList
         return null;
     }
 
-
-
-
-    public function showDeleteView($weekMenues){
-        $id = $this->getId();
-        $weekNumber = "";
-        $ret = "";
-
-        foreach($weekMenues as $menue){
-            if($menue->getId() == $id){
-                $week = $menue->getWeek();
-                $weekNumber = $week->getWeekNumber();
-            }
-        }
-
-        $ret .=
-            "<div>
-                <form method='post' action=''>
-                    <fieldset>
-                        <legend>Säkert att du vill radera veckomenyn för vecka $weekNumber?</legend>
-                        <button name='".self::$deleteConfirmed."'>Ja</button>
-                        <button name='".self::$cancel."'>Nej</button>
-                    </fieldset>
-		        </form>
-            </div>";
-
-        return $ret;
+    public function redirect(){
+        header('Location: /');
     }
-    public function showWeekMenuList($weekMenues){
 
-        $ret = "<table>";
+    //renders list of all weekmenues collected from database
+    public function showMenuList($weekMenues){
+
+        //sorts array of weekmenu objects by week startday
+        usort($weekMenues, function($a, $b) {
+            return $a->getWeek()->getStartDay() > $b->getWeek()->getStartDay();
+        });
+
+        $ret = "<div class='menulist'>
+                 <table>";
+
         foreach($weekMenues as $key => $menu){
 
             $id = $menu->getId();
@@ -104,28 +75,29 @@ class WeekMenuList
             $deleteUrl = $this->getDeleteWeekMenuUrl($id);
             $editUrl = $this->getEditWeekMenuUrl($id);
             $ret .=
-                " <tr>
-                    <th>Vecka | ".$week->getWeekNumber()." | ".$week->getStartDay()." | ".$week->getEndDay()."</th>
-                    <th><a href=$editUrl>Redigera</a></th>
-                    <th><a href=$deleteUrl>Radera</a></th>
+                "<tr>
+                    <th class='menulistheader'>Vecka | ".$week->getWeekNumber()." | ".$week->getStartDay()." | ".$week->getEndDay()."</th>
+                    <th><a class='headerlink'href=$editUrl>REDIGERA</a></th>
+                    <th><a class='headerlink' href=$deleteUrl>RADERA</a></th>
                   </tr>
                   <tr>
-                    <td>Måndag  " .$menu->getMonday() ." </td>
+                    <td class='menutext' colspan='3'>Måndag:  " .$menu->getMonday() ." </td>
                   </tr>
                   <tr>
-                    <td>Tisdag  ".$menu->getTuesday()."</td>
+                    <td class='menutext' colspan='3'>Tisdag:  ".$menu->getTuesday()."</td>
                   </tr>
                   <tr>
-                    <td>Onsdag  ".$menu->getWednesday()."</td>
+                    <td class='menutext' colspan='3'>Onsdag:  ".$menu->getWednesday()."</td>
                   </tr>
                   <tr>
-                    <td>Torsdag  ".$menu->getThursday()."</td>
+                    <td class='menutext' colspan='3'>Torsdag:  ".$menu->getThursday()."</td>
                   </tr>
                   <tr>
-                    <td>Fredag  ".$menu->getFriday()."</td>
+                    <td class='menutext' colspan='3'>Fredag:  ".$menu->getFriday()."</td>
                   </tr>";
         }
-        $ret .="</table>";
+        $ret .= "</table>
+                </div>";
         return $ret;
     }
 }

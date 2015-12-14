@@ -9,6 +9,7 @@
 namespace models;
 
 //class that takes values from drop down list
+//creates a week object to be used in a WeekMenu object
 class Week
 {
     private $weekNumber;

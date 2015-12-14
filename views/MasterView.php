@@ -18,27 +18,34 @@ class MasterView
 
     private static $login = 'MasterView::Login';
     private static $logout = 'MasterView::Logout';
+    private $loginDAL;
+    private $loginView;
+
+    public function __construct($loginDAL, $loginView){
+        $this->loginDAL = $loginDAL;
+        $this->loginView = $loginView;
+    }
 
 
-    public function renderTemplateHTML($partialView, $loggedIn){
+    public function renderTemplateHTML($partialView){
         echo
             '<!DOCTYPE html>
           <html>
             <head>
               <meta charset="utf-8">
-              <link rel="stylesheet" type="text/css" href="/css/Styles.css" />
+              <link rel="stylesheet" type="text/css" href="../css/Styles.css">
             </head>
             <body>
                 <header>
                 <form method="post">
-                     '.$this->showLoginLogout($loggedIn).'
+                     '.$this->showLoginLogout().'
                 </form>
                 </header>
                 <div class="container">
                 '.$partialView.'
                 </div>
                 <footer>
-                <p>Skapad av Johanna js223kz@student.lnu.se</p>
+                <p class="footertext">Skapad av Johanna js223kz@student.lnu.se</p>
                 </footer>
              </body>
           </html>
@@ -59,9 +66,14 @@ class MasterView
         return false;
     }
 
-    public function showLoginLogout($loggedIn){
+    public function logout(){
+        $this->loginDAL->unsetSession();
+        $this->loginView->redirect();
+    }
+
+    private function showLoginLogout(){
         $ret = "";
-        if($loggedIn){
+        if($this->loginDAL->isUserLoggedIn()){
             $ret .=   '<input class="loginbutton" type="submit" value="Logout" name='.self::$logout.'>';
 
         }else{

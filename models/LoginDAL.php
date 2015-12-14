@@ -21,7 +21,6 @@ class LoginDAL
 {
     private $dbConnection;
     private static $isUserLoggedIn = 'LoginDAL::isUserLoggedIn';
-    private static $remoteAddress = 'LoginDAL::remoteAddress';
     public function __construct()
     {
         $db = new DatabaseConnection();
@@ -53,7 +52,6 @@ class LoginDAL
             return null;
         } else if (password_verify($user->getPassword(), $row['password'])){
             $_SESSION[self::$isUserLoggedIn] = $user->getUsername();
-            $_SESSION[self::$remoteAddress]  = $_SERVER['REMOTE_ADDR'];
             return true;
         }else{
             return false;
@@ -76,7 +74,6 @@ class LoginDAL
                 $params["secure"], $params["httponly"]
             );
         }
-    session_destroy();
+        session_destroy();
     }
-
 }

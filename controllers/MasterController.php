@@ -23,94 +23,63 @@ require_once('models/LoginDAL.php');
 require_once('kust/controllers/KustAdminController.php');
 
 
-//Controller that mostly handles navigation
+//Controller that handles navigation according
+//to user loginstatus
 class MasterController
 {
     public function __construct()
     {
-        $masterView = new MasterView();
-        $startView = new StartView();
-        $loginView= new LoginView();
-        $loginDAL = new LoginDAL();
+        $this->checkUserStatus();
+    }
 
-        $isInputValidated = $loginView->getIsUserInputValidated();
+    private function checkUserStatus(){
+
+        $loginDAL = new LoginDAL();
+        $loginView= new LoginView($loginDAL);
+        $masterView = new MasterView($loginDAL, $loginView);
+        $isInputValidated = $loginView->getIsInputValidated();
 
         if(!$loginDAL->isUserLoggedIn()){
-            //user wants to start login process
-            //or enters input data that is not valid
-            if($masterView->userClickedLogin() || $loginView->userSubmitsLoginData() && !$isInputValidated){
-                $masterView->renderTemplateHTML($loginView->showLoginFrom(), false);
+
+            //user wants to start login process or enters input data that is not valid
+            if($masterView->userClickedLogin() || $loginView->userSubmitsLoginData()
+                && !$isInputValidated){
+
+                $masterView->renderTemplateHTML($loginView->showLoginFrom());
             }
-            //user has entered pwd and username and input is validated
-            //go to LoginController and try to authenticate user
+            //user has entered valid data, use LoginController and try authenticate user
             else if($loginView->userSubmitsLoginData() && $isInputValidated){
-                return new LoginController($loginView, $loginDAL);
+                $loginController = new LoginController();
+                $loggedIn = $loginController->checkUserCredentials($loginView, $loginDAL);
+
+                if($loggedIn){
+                    //if user is found in database
+                    return new KustAdminController($masterView, $loginDAL);
+                }else{
+                    $masterView->renderTemplateHTML($loginView->showLoginFrom());
+                }
             }
             else{
                 //if none of the above keep going back to StartView
-                $masterView->renderTemplateHTML($startView->showStartView($loginDAL->isUserLoggedIn()), false);
+                $startView = new StartView();
+                $masterView->renderTemplateHTML($startView->showHomeView($loginDAL->isUserLoggedIn()));
             }
         }
         else if($masterView->userClickedLogout()) {
-            $loginDAL->unsetSession();
-            $loginView->redirect();
+            $masterView->logout();
         }
         else{
             //If user is authenticated and logged in
-            return new KustAdminController($masterView, $loginView, $loginDAL);
+            return new KustAdminController($masterView, $loginDAL);
         }
     }
+}
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*
-     *
-     * <input type="hidden" name="csrf_token" value="<?php echo generateToken('protectedForm');/>"
-     *
-     *
-     *
-     *
-     * function generateToken($formname){
-        $secretKey='hhhhhhdfsfdsgj';
-        if(!session_id()){
-
-            session_start();
-        }
-        $sessionId = session_id();
-
-        return sha1($formname.$sessionId.$secretKey);
-    }
-
-    function checkToken($token, $formname){
-        return $token === $this->generateToken($formname);
-    }*/
-
-    //validate incoming
-
-    /*if(!empty($_POST['csrf_token'])){
-    if(checkToken($_POST['csrf_token'], 'protectedForm')){
-    //valid form continue
-    }
-
-}*/
-
-
-
+//used this function to check ok cost
+//when key stretching
 /*public function checkCost(){
         //$this->checkCost();
         $timeTarget = 0.05; // 50 milliseconds
@@ -124,7 +93,4 @@ class MasterController
         } while (($end - $start) < $timeTarget);
 
         echo "Appropriate Cost Found: " . $cost . "\n";
-    }*/
-
-
-}
+}*/

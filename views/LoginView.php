@@ -14,16 +14,16 @@ class LoginView
     private static $passWord = 'LoginView::Password';
     private static $submitLogin = 'LoginView::Submitlogin';
     private $responseMessage;
-    private $isUserInputValidated = false;
+    private $inputIsValidated = false;
 
     //purely for user friendly reason
     //keeping entered username visible
     //in input field through POST
     private $username;
 
-    public function __construct()
+    public function __construct($loginDAL)
     {
-        $this->setReponseMessage();
+        $this->setReponseMessage($loginDAL);
     }
 
     //renders a partial view when user
@@ -34,9 +34,9 @@ class LoginView
             <form class="loginform" method="post" action="">
                 <fieldset class="loginfieldset">
                     <legend>Logga in</legend>
-                    <p>'.$this->getMessage().'</p>
-                    <input type="text" id="' . self::$userName . '"name="' . self::$userName . '" value="'.$this->getUserName().'"/>
-                    <input type="text" id="' . self::$passWord . '"name="' . self::$passWord . '"/>
+                    <p class="errormessage">'.$this->getMessage().'</p>
+                    <input class="logininput" placeholder="Användarnamn" type="text" id="' . self::$userName . '"name="' . self::$userName . '" value="'.$this->getUserName().'"/>
+                    <input class="logininput" placeholder="Lösenord" type="text" id="' . self::$passWord . '"name="' . self::$passWord . '"/>
                     <input class="submitlogin" type="submit" id="' . self::$submitLogin . '" name=' . self::$submitLogin . ' value="Login"/>
                 </fieldset>
             </form>
@@ -46,7 +46,7 @@ class LoginView
     public function userSubmitsLoginData(){
         return isset($_POST[self::$submitLogin]);
     }
-    public function getMessage(){
+    private function getMessage(){
         return $this->responseMessage;
     }
 
@@ -56,6 +56,7 @@ class LoginView
         }
         return null;
     }
+
     public function getPassword(){
         if(isset($_POST[self::$passWord])){
             return $_POST[self::$passWord];
@@ -67,8 +68,8 @@ class LoginView
      * @return bool to MasterController if
      * user input is validated
      */
-    public function getIsUserInputValidated(){
-        return $this->isUserInputValidated;
+    public function getIsInputValidated(){
+        return $this->inputIsValidated;
     }
 
     public function redirect(){
@@ -84,7 +85,7 @@ class LoginView
      * is validated
      * Called from constructor
      */
-    public function setReponseMessage(){
+    private function setReponseMessage($loginDAL){
 
         if(isset($_POST[self::$submitLogin])){
             $userName = trim($_POST[self::$userName]);
@@ -110,7 +111,8 @@ class LoginView
                 $this->setNotAllowedMessage();
             }
             else{
-                $this->isUserInputValidated = true;
+                $this->inputIsValidated = true;
+                $this->setNotValidUserMessage();
             }
         }
     }
